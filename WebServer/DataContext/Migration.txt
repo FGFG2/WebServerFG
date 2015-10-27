@@ -1,0 +1,20 @@
+﻿//If no Configurationfile exist
+	Enable-Migrations -ContextTypeName AchievementDb -MigrationsDirectory DataContext -Force
+	Add-Migration -ConfigurationTypeName WebServer.DataContext.Configuration "InitialCreate" -Force
+	Update-Database -ConfigurationTypeName WebServer.DataContext.Configuration -Verbose
+
+//If no InitialCreate exist 
+	Add-Migration -ConfigurationTypeName WebServer.DataContext.Configuration "InitialCreate" -Force
+	Update-Database -ConfigurationTypeName WebServer.DataContext.Configuration -Verbose
+
+//If you want to update or add the Database
+	Update-Database -ConfigurationTypeName WebServer.DataContext.Configuration -Verbose
+
+
+//If the entities beheind have changed
+	Update-Database -TargetMigration $InitialDatabase
+	Add-Migration -ConfigurationTypeName WebServer.DataContext.Configuration "InitialCreate" -Force
+	Update-Database -ConfigurationTypeName WebServer.DataContext.Configuration -Verbose
+
+
+
