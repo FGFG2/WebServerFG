@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using NUnit.Framework;
 using WebServer.DataContext;
 using WebServer.Models;
 
 namespace WebServer.Tests.DataContext
 {
+    [Explicit]
     public class AchievementDbTest
     {
         [SetUp]
