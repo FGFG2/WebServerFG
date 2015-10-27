@@ -40,14 +40,14 @@ namespace WebServer.Controllers
         
         // GET: api/AllAchievements
         [Route("api/AllAchievements")]
-        public IEnumerable<Achievement> GetAllAchievements()
+        public IQueryable<Achievement> GetAllAchievements()
         {
             return _mockedAchievements.AsQueryable();
         }
 
         // GET: api/ObtainedAchievements
         [Route("api/ObtainedAchievements")]
-        public IEnumerable<Achievement> GetObtainedAchievements()
+        public IQueryable<Achievement> GetObtainedAchievements()
         {
             var obtained =
                 from achievement in _mockedAchievements
