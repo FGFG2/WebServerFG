@@ -5,10 +5,8 @@ namespace WebServer.Models
     /// <summary>
     /// Model class for a single achievement. Contains detailed information and the progress.
     /// </summary>
-    public class Achievement
+    public class Achievement : Entity
     {
-        public int Id { get; set; }
-
         /// <summary>
         /// Name of the achievement.
         /// </summary>
