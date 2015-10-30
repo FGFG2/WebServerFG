@@ -209,7 +209,6 @@
     <Compile Include="Controllers\AchievementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PlaneDataController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="DataContext\201510271614524_InitialCreate.cs" />
     <Compile Include="DataContext\201510271614524_InitialCreate.Designer.cs">
       <DependentUpon>201510271614524_InitialCreate.cs</DependentUpon>
