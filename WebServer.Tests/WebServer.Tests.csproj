@@ -106,7 +106,7 @@
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="Universial.Test">
-      <HintPath>..\..\..\ImageSorter\trunk\packages\Universial.1.0\Universial.Test.dll</HintPath>
+      <HintPath>..\external\Universial\Universial.Test.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
