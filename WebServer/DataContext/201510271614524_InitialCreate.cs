@@ -8,6 +8,15 @@ namespace WebServer.DataContext
         public override void Up()
         {
             CreateTable(
+                "dbo.SmartPlaneUsers",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        ReleatedApplicationUserId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
                 "dbo.Achievements",
                 c => new
                     {
@@ -16,8 +25,24 @@ namespace WebServer.DataContext
                         Description = c.String(),
                         ImageUrl = c.String(),
                         Progress = c.Byte(nullable: false),
+                        SmartPlaneUser_Id = c.Int(),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.SmartPlaneUsers", t => t.SmartPlaneUser_Id)
+                .Index(t => t.SmartPlaneUser_Id);
+            
+            CreateTable(
+                "dbo.ConnectedDatas",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        IsConnected = c.Boolean(nullable: false),
+                        TimeStamp = c.Int(nullable: false),
+                        SmartPlaneUser_Id = c.Int(),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.SmartPlaneUsers", t => t.SmartPlaneUser_Id)
+                .Index(t => t.SmartPlaneUser_Id);
             
             CreateTable(
                 "dbo.MotorDatas",
@@ -26,8 +51,11 @@ namespace WebServer.DataContext
                         Id = c.Int(nullable: false, identity: true),
                         Value = c.Int(nullable: false),
                         TimeStamp = c.Int(nullable: false),
+                        SmartPlaneUser_Id = c.Int(),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.SmartPlaneUsers", t => t.SmartPlaneUser_Id)
+                .Index(t => t.SmartPlaneUser_Id);
             
             CreateTable(
                 "dbo.RudderDatas",
@@ -36,16 +64,29 @@ namespace WebServer.DataContext
                         Id = c.Int(nullable: false, identity: true),
                         Value = c.Int(nullable: false),
                         TimeStamp = c.Int(nullable: false),
+                        SmartPlaneUser_Id = c.Int(),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.SmartPlaneUsers", t => t.SmartPlaneUser_Id)
+                .Index(t => t.SmartPlaneUser_Id);
             
         }
         
         public override void Down()
         {
+            DropForeignKey("dbo.RudderDatas", "SmartPlaneUser_Id", "dbo.SmartPlaneUsers");
+            DropForeignKey("dbo.MotorDatas", "SmartPlaneUser_Id", "dbo.SmartPlaneUsers");
+            DropForeignKey("dbo.ConnectedDatas", "SmartPlaneUser_Id", "dbo.SmartPlaneUsers");
+            DropForeignKey("dbo.Achievements", "SmartPlaneUser_Id", "dbo.SmartPlaneUsers");
+            DropIndex("dbo.RudderDatas", new[] { "SmartPlaneUser_Id" });
+            DropIndex("dbo.MotorDatas", new[] { "SmartPlaneUser_Id" });
+            DropIndex("dbo.ConnectedDatas", new[] { "SmartPlaneUser_Id" });
+            DropIndex("dbo.Achievements", new[] { "SmartPlaneUser_Id" });
             DropTable("dbo.RudderDatas");
             DropTable("dbo.MotorDatas");
+            DropTable("dbo.ConnectedDatas");
             DropTable("dbo.Achievements");
+            DropTable("dbo.SmartPlaneUsers");
         }
     }
 }

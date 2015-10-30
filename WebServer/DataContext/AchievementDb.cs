@@ -5,14 +5,15 @@ namespace WebServer.DataContext
 {
     public class AchievementDb : DbContext
     {
-        public virtual DbSet<Achievement> Achievements { get; set; }
-
-        public virtual DbSet<MotorData> MotorDatas { get; set; }
-
-        public virtual DbSet<RudderData> RudderDatas { get; set; }
+        public virtual DbSet<SmartPlaneUser> SmartPlaneUsers { get; set; }
 
         public AchievementDb() : base("DefaultConnection")
         {
+        }
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            Database.SetInitializer<AchievementDb>(null);
             
         }
     }

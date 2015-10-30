@@ -8,6 +8,6 @@
         /// <summary>
         /// The time when the data was collected
         /// </summary>
-        public int TimeStamp { get; set; }
+        public virtual int TimeStamp { get; set; }
     }
 }

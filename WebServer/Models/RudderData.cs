@@ -8,6 +8,6 @@
         /// <summary>
         /// The specific calue of a Rudder
         /// </summary>
-        public int Value { get; set; }
+        public virtual int Value { get; set; }
     }
 }

@@ -1,11 +1,12 @@
+
+using System.Data.Entity;
+using System.Data.Entity.Migrations;
+using System.Linq;
+using WebServer.Models;
+
 namespace WebServer.DataContext
 {
-    using System;
-    using System.Data.Entity;
-    using System.Data.Entity.Migrations;
-    using System.Linq;
-
-    internal sealed class Configuration : DbMigrationsConfiguration<WebServer.DataContext.AchievementDb>
+    internal sealed class Configuration : DbMigrationsConfiguration<AchievementDb>
     {
         public Configuration()
         {
@@ -13,20 +14,11 @@ namespace WebServer.DataContext
             MigrationsDirectory = @"DataContext";
         }
 
-        protected override void Seed(WebServer.DataContext.AchievementDb context)
+        protected override void Seed(AchievementDb context)
         {
-            //  This method will be called after migrating to the latest version.
-
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
-            //  to avoid creating duplicate seed data. E.g.
-            //
-            //    context.People.AddOrUpdate(
-            //      p => p.FullName,
-            //      new Person { FullName = "Andrew Peters" },
-            //      new Person { FullName = "Brice Lambson" },
-            //      new Person { FullName = "Rowan Miller" }
-            //    );
-            //
+            context.SmartPlaneUsers.Add(new SmartPlaneUser());
+            context.SaveChanges();
+            context.SmartPlaneUsers.First().MotorDatas.Add(new MotorData());
         }
     }
 }

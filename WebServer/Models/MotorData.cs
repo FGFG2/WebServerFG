@@ -8,6 +8,6 @@
         /// <summary>
         /// The specific data value of a motor
         /// </summary>
-        public int Value { get; set; }
+        public virtual int Value { get; set; }
     }
 }
