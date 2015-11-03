@@ -12,5 +12,11 @@ namespace WebServer.BusinessLogic
         /// </summary>
         /// <param name="targetUser">The user that needs to be evaluated.</param>
         void CalculateAchievementProgress(SmartPlaneUser targetUser);
+
+        /// <summary>
+        /// Factory method which creates the Achievement releted to this calculator.
+        /// </summary>
+        /// <returns></returns>
+        Achievement CreateAchievement();
     }
 }
