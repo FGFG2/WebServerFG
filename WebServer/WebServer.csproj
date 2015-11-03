@@ -205,6 +205,8 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="BusinessLogic\AchievementCalculationManager.cs" />
+    <Compile Include="BusinessLogic\IAchievementCalculationManager.cs" />
     <Compile Include="BusinessLogic\IAchievementCalculator.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AchievementController.cs" />
