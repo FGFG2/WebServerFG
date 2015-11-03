@@ -4,30 +4,41 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using NSubstitute;
 using NUnit.Framework;
 using Universial.Test;
 using WebServer.Controllers;
+using WebServer.DataContext;
+using WebServer.Models;
 
 namespace WebServer.Tests.Controllers
 {
-    public class PlaneDataControllerTest :TestBase<PlaneDataController>
+    public class PlaneDataControllerTest :AchievementTestBase<PlaneDataController>
     {
+        private IAchievementDb _achievementDbMock;
+        private SmartPlaneUser _smartPlaneTestUser;
+
         [SetUp]
         protected override void SetUp()
         {
             base.SetUp();
-            SystemUnderTest = new PlaneDataController();
+            _achievementDbMock = Substitute.For<IAchievementDb>();
+            SystemUnderTest = new PlaneDataController(_achievementDbMock);
+            _smartPlaneTestUser = CreateSmartPlaneUser();
+            _achievementDbMock.GetSmartPlaneUserById(0).ReturnsForAnyArgs(_smartPlaneTestUser);
         }
 
         [Test]
         public void Test_SetMotor()
         {
-            //Arrange 
+            //Arrange             
             
             //Act
             var result = SystemUnderTest.SetMotor(new Dictionary<int, int> {{1, 1}});
 
             //Assert
+            Assert.That(()=>_smartPlaneTestUser.MotorDatas.First().Value,Is.EqualTo(1));
+            Assert.That(() =>_smartPlaneTestUser.MotorDatas.First().TimeStamp,Is.EqualTo(1));
             Assert.That(()=>result.StatusCode,Is.EqualTo(HttpStatusCode.Created));
         }
 
@@ -35,11 +46,13 @@ namespace WebServer.Tests.Controllers
         public void Test_SetRudder()
         {
             //Arrange 
-
+           
             //Act
-            var result = SystemUnderTest.SetRuder(new Dictionary<int, int> { { 1, 1 } });
-
+            var result = SystemUnderTest.SetRudder(new Dictionary<int, int> { { 1, 1 } });
+            
             //Assert
+            Assert.That(()=>_smartPlaneTestUser.RudderDatas.First().Value,Is.EqualTo(1));
+            Assert.That(() => _smartPlaneTestUser.RudderDatas.First().TimeStamp, Is.EqualTo(1));
             Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
         }
 
@@ -52,6 +65,8 @@ namespace WebServer.Tests.Controllers
             var result = SystemUnderTest.SetIsConnected(new Dictionary<int, bool> { { 1, true } });
 
             //Assert
+            Assert.That(()=>_smartPlaneTestUser.ConnectedDatas.First().IsConnected,Is.EqualTo(true));
+            Assert.That(()=>_smartPlaneTestUser.ConnectedDatas.First().TimeStamp,Is.EqualTo(1));
             Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
         }
     }
