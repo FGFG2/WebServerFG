@@ -36,10 +36,10 @@ namespace WebServer.Controllers
 
         // POST api/SetRuder
         [Route("api/SetRuder")]
-        public HttpResponseMessage SetRudder(Dictionary<int, int> ruderMap)
+        public HttpResponseMessage SetRudder(Dictionary<int, int> rudderMap)
         {
             var currentUser = _achievementDb.GetSmartPlaneUserById(0);
-            foreach (var rudderData in ruderMap)
+            foreach (var rudderData in rudderMap)
             {
                 currentUser.RudderDatas.Add(new RudderData {TimeStamp = rudderData.Key, Value = rudderData.Value});
             }
