@@ -14,7 +14,6 @@ namespace WebServer.DataContext
         {
             base.OnModelCreating(modelBuilder);
             Database.SetInitializer<AchievementDb>(null);
-            
         }
     }
 }
