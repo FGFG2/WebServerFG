@@ -110,6 +110,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AchievementTestBase.cs" />
+    <Compile Include="BusinessLogic\ConnectionAchievementCalculatorTest.cs" />
     <Compile Include="Controllers\AchievementControllerTest.cs" />
     <Compile Include="Controllers\PlaneDataControllerTest.cs" />
     <Compile Include="DataContext\AchievementDbTest.cs" />
