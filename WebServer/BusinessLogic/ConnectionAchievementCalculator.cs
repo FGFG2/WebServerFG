@@ -36,7 +36,8 @@ namespace WebServer.BusinessLogic
             {
                 Name = AchievementName,
                 Description = "Verbinde dich mit deinem SmartPlane",
-                Progress = 0
+                Progress = 0,
+                ImageUrl = ""
             };
         }
     }
