@@ -14,7 +14,7 @@ namespace WebServer.Controllers
     /// </summary>
     public class PlaneDataController : ApiController
     {
-        private IAchievementDb _achievementDb;
+        private readonly IAchievementDb _achievementDb;
 
         public PlaneDataController(IAchievementDb achievementDb)
         {
