@@ -112,6 +112,7 @@
   <ItemGroup>
     <Compile Include="BusinessLogic\AchievementCalculationManagerTest.cs" />
     <Compile Include="AchievementTestBase.cs" />
+    <Compile Include="BusinessLogic\AchievementCalculatorDetectorTest.cs" />
     <Compile Include="BusinessLogic\ConnectionAchievementCalculatorTest.cs" />
     <Compile Include="Controllers\AchievementControllerTest.cs" />
     <Compile Include="Controllers\PlaneDataControllerTest.cs" />
