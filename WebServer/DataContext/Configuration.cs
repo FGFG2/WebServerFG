@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using WebServer.BusinessLogic;
 using WebServer.Models;
 
 namespace WebServer.DataContext
@@ -18,7 +19,7 @@ namespace WebServer.DataContext
         {
             context.SmartPlaneUsers.Add(new SmartPlaneUser());
             context.SaveChanges();
-            context.SmartPlaneUsers.First().MotorDatas.Add(new MotorData());
+            context.SmartPlaneUsers.First().Achievements.Add(new ConnectionAchievementCalculator().CreateAchievement());
         }
     }
 }
