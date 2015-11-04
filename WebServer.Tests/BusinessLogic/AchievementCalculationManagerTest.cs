@@ -20,7 +20,10 @@ namespace WebServer.Tests.BusinessLogic
             _dummySmartPlaneUser = new SmartPlaneUser();
 
             _calculators = new List<IAchievementCalculator> { Substitute.For<IAchievementCalculator>(), Substitute.For<IAchievementCalculator> ()};
-            SystemUnderTest = new AchievementCalculationManager(_calculators);
+            var detector = Substitute.For<IAchievementCalculatorDetector>();
+            detector.FindAllAchievementCalculator().Returns(_calculators);
+
+            SystemUnderTest = new AchievementCalculationManager(detector);
         }
 
         [Test]

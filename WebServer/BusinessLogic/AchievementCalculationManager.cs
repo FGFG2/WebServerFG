@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using WebServer.Models;
 
@@ -12,17 +11,17 @@ namespace WebServer.BusinessLogic
     {
         #region Fields
 
-        private readonly ICollection<IAchievementCalculator> _achievementCalculators;
+        private readonly IList<IAchievementCalculator> _achievementCalculators;
 
         #endregion;
 
         /// <summary>
-        /// Creates the Manager with a specified list of achievementCalculators that will be checked every time a users data changes.
+        /// Creates the Manager using the achievementDetector to find all avaialable achievements.
         /// </summary>
-        /// <param name="achievementCalculators">Achievements that should be evaluated.</param>
-        public AchievementCalculationManager(ICollection<IAchievementCalculator> achievementCalculators)
+        /// <param name="achievementDetector">Detector used to find the available achievements</param>
+        public AchievementCalculationManager(IAchievementCalculatorDetector achievementDetector)
         {
-            _achievementCalculators = achievementCalculators;
+            _achievementCalculators = achievementDetector.FindAllAchievementCalculator().ToList();
         }
 
         public void UpdateForUser(SmartPlaneUser userWithChangedData)
