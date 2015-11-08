@@ -15,7 +15,11 @@ namespace WebServer.BusinessLogic
         #region Fields
 
         private readonly IList<IAchievementCalculator> _achievementCalculators;
-        private readonly ConcurrentQueue<SmartPlaneUser> _userWithChangedData;
+        // used as ConcurrentSet with the keys as values. The values of the dictionary are not used.
+        // The ConcurrentDictionary is used, because there is no default implementation of a concurrent set and the
+        // dictionary serves well enough as a set (there is overhead by the values, but the self implementation would not be worth
+        // the trouble. One million users would only lead to a memory overhead of 1 MB.
+        private readonly ConcurrentDictionary<SmartPlaneUser, byte> _userWithChangedData;
         private readonly Task _achievementCalculationTask;
         private readonly CancellationTokenSource _achievementCalculationCancelSource;
 
@@ -28,7 +32,7 @@ namespace WebServer.BusinessLogic
         public AchievementCalculationManager(IAchievementCalculatorDetector achievementDetector)
         {
             _achievementCalculators = achievementDetector.FindAllAchievementCalculator().ToList();
-            _userWithChangedData = new ConcurrentQueue<SmartPlaneUser>();
+            _userWithChangedData = new ConcurrentDictionary<SmartPlaneUser,byte>();
 
             _achievementCalculationCancelSource = new CancellationTokenSource();
             _achievementCalculationTask = new Task(_achievementCalculation, _achievementCalculationCancelSource.Token, TaskCreationOptions.LongRunning);
@@ -39,19 +43,30 @@ namespace WebServer.BusinessLogic
         {
             while (_achievementCalculationCancelSource.IsCancellationRequested == false)
             {
-                while (_userWithChangedData.IsEmpty == false)
-                {
-                    //TODO: Add Logging if dequeTryDequeue failed
-
-                    SmartPlaneUser user;
-                    _userWithChangedData.TryDequeue(out user);
+                var usersToUpdate = _getUsersToUpdate();
+                foreach (var user in usersToUpdate)
+                { 
                     _calculateAchievementsForUser(user);
-                } 
+                }
 
-                // Avoid busy-wait
-                Thread.Sleep(100);
+                // Avoid busy-wait, Calculate each seconds to limit the load for the server.
+                Thread.Sleep(1000);
             }
         }
+
+        private IEnumerable<SmartPlaneUser> _getUsersToUpdate()
+        {
+            //dump keys of concurrent dictionary to use them outside synchronized blocks. 
+            //Clear the dictionary, so that already updated user are not going to be updated again when not needed.
+            IEnumerable<SmartPlaneUser> users;
+            lock (_userWithChangedData) 
+            {
+                users = _userWithChangedData.Keys;
+                _userWithChangedData.Clear();
+            }
+
+            return users;
+        } 
 
         private void _calculateAchievementsForUser(SmartPlaneUser user)
         {
@@ -63,10 +78,12 @@ namespace WebServer.BusinessLogic
 
         public void UpdateForUser(SmartPlaneUser userWithChangedData)
         {
-            // TODO: IAchievementCalculator, property: typeOfAchievement, otherwise it is not possible to check if achievement exists. Alternative: IsAchieved (user) method
-            _userWithChangedData.Enqueue(userWithChangedData);
+            lock (_userWithChangedData)
+            {
+                _userWithChangedData.AddOrUpdate(userWithChangedData, 0, (key, oldValue) => 0);
+            }
         }
 
-       
+        //TODO: Add IDisposable, canceling the achievementTask to prevent unexpected changes to the database.
     }
 }
