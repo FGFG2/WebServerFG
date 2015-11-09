@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using WebServer.BusinessLogic;
 using WebServer.DataContext;
 using WebServer.Models;
 
@@ -15,10 +16,12 @@ namespace WebServer.Controllers
     public class PlaneDataController : ApiController
     {
         private readonly IAchievementDb _achievementDb;
+        private readonly IAchievementCalculationManager _calculationManager;
 
-        public PlaneDataController(IAchievementDb achievementDb)
+        public PlaneDataController(IAchievementDb achievementDb, IAchievementCalculationManager calculationManager)
         {
             _achievementDb = achievementDb;
+            _calculationManager = calculationManager;
         }
 
         // POST api/SetMotor
@@ -30,6 +33,7 @@ namespace WebServer.Controllers
             {
                 currentUser.MotorDatas.Add(new MotorData {TimeStamp = motorData.Key, Value = motorData.Value});
             }
+            _calculationManager.UpdateForUser(currentUser);
             _achievementDb.SaveChanges();
             return new HttpResponseMessage(HttpStatusCode.Created);
         }
@@ -43,6 +47,7 @@ namespace WebServer.Controllers
             {
                 currentUser.RudderDatas.Add(new RudderData {TimeStamp = rudderData.Key, Value = rudderData.Value});
             }
+            _calculationManager.UpdateForUser(currentUser);
             _achievementDb.SaveChanges();
             return new HttpResponseMessage(HttpStatusCode.Created);
         }
@@ -56,6 +61,7 @@ namespace WebServer.Controllers
             {
                 currentUser.ConnectedDatas.Add(new ConnectedData {TimeStamp = connectionChange.Key, IsConnected = connectionChange.Value});
             }
+            _calculationManager.UpdateForUser(currentUser);
             _achievementDb.SaveChanges();
             return new HttpResponseMessage(HttpStatusCode.Created);
         }

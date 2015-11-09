@@ -14,13 +14,15 @@ namespace WebServer.Tests.Controllers
     {
         private IAchievementDb _achievementDbMock;
         private SmartPlaneUser _smartPlaneTestUser;
+        private IAchievementCalculationManager _achievementCalculatorMock;
 
         [SetUp]
         protected override void SetUp()
         {
             base.SetUp();
             _achievementDbMock = Substitute.For<IAchievementDb>();
-            SystemUnderTest = new AchievementController(_achievementDbMock);
+            _achievementCalculatorMock = Substitute.For<IAchievementCalculationManager>();
+            SystemUnderTest = new AchievementController(_achievementDbMock,_achievementCalculatorMock);
 
             _smartPlaneTestUser = CreateSmartPlaneUser();
             _achievementDbMock.GetSmartPlaneUserById(0).ReturnsForAnyArgs(_smartPlaneTestUser);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using WebServer.DataContext;
 using WebServer.Models;
 
 namespace WebServer.BusinessLogic
@@ -22,6 +23,7 @@ namespace WebServer.BusinessLogic
         private readonly ConcurrentDictionary<SmartPlaneUser, byte> _userWithChangedData;
         private readonly Task _achievementCalculationTask;
         private readonly CancellationTokenSource _achievementCalculationCancelSource;
+        private readonly IAchievementDb _achievementDb;
 
         #endregion;
 
@@ -29,8 +31,10 @@ namespace WebServer.BusinessLogic
         /// Creates the Manager using the achievementDetector to find all available achievements.
         /// </summary>
         /// <param name="achievementDetector">Detector used to find the available achievements</param>
-        public AchievementCalculationManager(IAchievementCalculatorDetector achievementDetector)
+        /// <param name="achievementDb"></param>
+        public AchievementCalculationManager(IAchievementCalculatorDetector achievementDetector, IAchievementDb achievementDb)
         {
+            _achievementDb = achievementDb;
             _achievementCalculators = achievementDetector.FindAllAchievementCalculator().ToList();
             _userWithChangedData = new ConcurrentDictionary<SmartPlaneUser,byte>();
 
@@ -48,6 +52,8 @@ namespace WebServer.BusinessLogic
                 { 
                     _calculateAchievementsForUser(user);
                 }
+
+                _achievementDb.SaveChanges();
 
                 // Avoid busy-wait, Calculate each seconds to limit the load for the server.
                 Thread.Sleep(1000);

@@ -4,6 +4,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Universial.Test;
 using WebServer.BusinessLogic;
+using WebServer.DataContext;
 using WebServer.Models;
 
 namespace WebServer.Tests.BusinessLogic
@@ -22,8 +23,9 @@ namespace WebServer.Tests.BusinessLogic
             _calculators = new List<IAchievementCalculator> { Substitute.For<IAchievementCalculator>(), Substitute.For<IAchievementCalculator> ()};
             var detector = Substitute.For<IAchievementCalculatorDetector>();
             detector.FindAllAchievementCalculator().Returns(_calculators);
+            var achievementDbMock = Substitute.For<IAchievementDb>();
 
-            SystemUnderTest = new AchievementCalculationManager(detector);
+            SystemUnderTest = new AchievementCalculationManager(detector, achievementDbMock);
         }
 
         [Test]

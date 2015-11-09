@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Universial.Test;
+using WebServer.BusinessLogic;
 using WebServer.Controllers;
 using WebServer.DataContext;
 using WebServer.Models;
@@ -17,13 +18,15 @@ namespace WebServer.Tests.Controllers
     {
         private IAchievementDb _achievementDbMock;
         private SmartPlaneUser _smartPlaneTestUser;
+        private IAchievementCalculationManager _achievementCalculatorMock;
 
         [SetUp]
         protected override void SetUp()
         {
             base.SetUp();
             _achievementDbMock = Substitute.For<IAchievementDb>();
-            SystemUnderTest = new PlaneDataController(_achievementDbMock);
+            _achievementCalculatorMock = Substitute.For<IAchievementCalculationManager>();
+            SystemUnderTest = new PlaneDataController(_achievementDbMock,_achievementCalculatorMock);
             _smartPlaneTestUser = CreateSmartPlaneUser();
             _achievementDbMock.GetSmartPlaneUserById(0).ReturnsForAnyArgs(_smartPlaneTestUser);
         }
