@@ -3,6 +3,7 @@ using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using WebServer.BusinessLogic;
 using WebServer.DataContext;
+using WebServer.Logging;
 
 namespace WebServer
 {
@@ -12,6 +13,7 @@ namespace WebServer
     public class UnityConfig
     {
         #region Unity Container
+
         private static readonly Lazy<IUnityContainer> Container = new Lazy<IUnityContainer>(() =>
         {
             var container = new UnityContainer();
@@ -26,6 +28,7 @@ namespace WebServer
         {
             return Container.Value;
         }
+
         #endregion
 
         /// <summary>Registers the type mappings with the Unity container.</summary>
@@ -36,10 +39,10 @@ namespace WebServer
         {
             // NOTE: To load from web.config uncomment the line below. Make sure to add a Microsoft.Practices.Unity.Configuration to the using statements.
             // container.LoadConfiguration();
-            
-             container.RegisterType<IAchievementDb, AchievementDbAbstraction>();
-             container.RegisterType<IAchievementCalculatorDetector, AchievementCalculatorDetector>();
-             container.RegisterType<IAchievementCalculationManager, AchievementCalculationManager>(container.Resolve<ContainerControlledLifetimeManager>());
+            container.RegisterType<IAchievementDb, AchievementDbAbstraction>();
+            container.RegisterType<IAchievementCalculatorDetector, AchievementCalculatorDetector>();
+            container.RegisterType<IAchievementCalculationManager, AchievementCalculationManager>(container.Resolve<ContainerControlledLifetimeManager>());
+            container.RegisterType<ILoggerFacade, LoggerNLog>(container.Resolve<ContainerControlledLifetimeManager>());
         }
     }
 }
