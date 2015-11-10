@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Results;
 using WebServer.BusinessLogic;
 using WebServer.DataContext;
 using WebServer.Models;
@@ -28,20 +30,30 @@ namespace WebServer.Controllers
         [Route("api/SetMotor")]
         public HttpResponseMessage SetMotor(Dictionary<int, int> motorMap)
         {
-            var currentUser = _achievementDb.GetSmartPlaneUserById(0);            
+            if (!motorMap.Any())
+            {
+                return new HttpResponseMessage(HttpStatusCode.NoContent);
+            }
+                        
+            var currentUser = _achievementDb.GetSmartPlaneUserById(0);
             foreach (var motorData in motorMap)
             {
-                currentUser.MotorDatas.Add(new MotorData {TimeStamp = motorData.Key, Value = motorData.Value});
+                currentUser.MotorDatas.Add(new MotorData { TimeStamp = motorData.Key, Value = motorData.Value });
             }
             _calculationManager.UpdateForUser(currentUser);
             _achievementDb.SaveChanges();
-            return new HttpResponseMessage(HttpStatusCode.Created);
+            return new HttpResponseMessage(HttpStatusCode.Created);                         
         }
 
         // POST api/SetRuder
         [Route("api/SetRuder")]
         public HttpResponseMessage SetRudder(Dictionary<int, int> rudderMap)
         {
+            if (!rudderMap.Any())
+            {
+                return new HttpResponseMessage(HttpStatusCode.NoContent);
+            }
+
             var currentUser = _achievementDb.GetSmartPlaneUserById(0);
             foreach (var rudderData in rudderMap)
             {
@@ -56,6 +68,11 @@ namespace WebServer.Controllers
         [Route("api/SetIsConnected")]
         public HttpResponseMessage SetIsConnected(Dictionary<int, bool> connectionChanges)
         {
+            if (!connectionChanges.Any())
+            {
+                return new HttpResponseMessage(HttpStatusCode.NoContent);
+            }
+
             var currentUser = _achievementDb.GetSmartPlaneUserById(0);
             foreach (var connectionChange in connectionChanges)
             {
