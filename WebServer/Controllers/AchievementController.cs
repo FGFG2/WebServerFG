@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading;
 using System.Web.Http;
 using WebServer.BusinessLogic;
 using WebServer.DataContext;
@@ -12,12 +13,10 @@ namespace WebServer.Controllers
     public class AchievementController : ApiController
     {
         private readonly IAchievementDb _achievementDb;
-        private readonly IAchievementCalculationManager _calculationManager;
 
-        public AchievementController(IAchievementDb achievementDb, IAchievementCalculationManager calculationManager)
+        public AchievementController(IAchievementDb achievementDb)
         {
             _achievementDb = achievementDb;
-            _calculationManager = calculationManager;
         }
 
         // GET: api/AllAchievements
@@ -39,9 +38,6 @@ namespace WebServer.Controllers
         private SmartPlaneUser _getCurrentUser()
         {
             var currentUser = _achievementDb.GetSmartPlaneUserById(0);
-            //Update the Achievements for the current user. To prevent not correct calculated Achievements.
-            _calculationManager.UpdateForUser(currentUser);
-            _achievementDb.SaveChanges();
             return currentUser;
         }
     }

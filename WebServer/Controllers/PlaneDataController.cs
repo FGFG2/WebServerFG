@@ -40,8 +40,8 @@ namespace WebServer.Controllers
             {
                 currentUser.MotorDatas.Add(new MotorData { TimeStamp = motorData.Key, Value = motorData.Value });
             }
-            _calculationManager.UpdateForUser(currentUser);
             _achievementDb.SaveChanges();
+            _calculationManager.UpdateForUser(currentUser.Id);
             return new HttpResponseMessage(HttpStatusCode.Created);                         
         }
 
@@ -59,8 +59,8 @@ namespace WebServer.Controllers
             {
                 currentUser.RudderDatas.Add(new RudderData {TimeStamp = rudderData.Key, Value = rudderData.Value});
             }
-            _calculationManager.UpdateForUser(currentUser);
             _achievementDb.SaveChanges();
+            _calculationManager.UpdateForUser(currentUser.Id);
             return new HttpResponseMessage(HttpStatusCode.Created);
         }
 
@@ -78,8 +78,8 @@ namespace WebServer.Controllers
             {
                 currentUser.ConnectedDatas.Add(new ConnectedData {TimeStamp = connectionChange.Key, IsConnected = connectionChange.Value});
             }
-            _calculationManager.UpdateForUser(currentUser);
             _achievementDb.SaveChanges();
+            _calculationManager.UpdateForUser(currentUser.Id);
             return new HttpResponseMessage(HttpStatusCode.Created);
         }
     }

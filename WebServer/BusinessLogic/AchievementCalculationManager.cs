@@ -82,11 +82,12 @@ namespace WebServer.BusinessLogic
             }
         }
 
-        public void UpdateForUser(SmartPlaneUser userWithChangedData)
+
+        public void UpdateForUser(int userId)
         {
             lock (_userWithChangedData)
             {
-                _userWithChangedData.AddOrUpdate(userWithChangedData, 0, (key, oldValue) => 0);
+                _userWithChangedData.AddOrUpdate(_achievementDb.GetSmartPlaneUserById(userId), 0, (key, oldValue) => 0);
             }
         }
 

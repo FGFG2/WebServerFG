@@ -10,7 +10,7 @@ namespace WebServer.BusinessLogic
         /// <summary>
         /// Signals that the achievements of the passed user needs to be re-evaluated.
         /// </summary>
-        /// <param name="userWithChangedData">User that needs to be evaluated.</param>
-        void UpdateForUser(SmartPlaneUser userWithChangedData);
+        /// <param name="userId">The Id of the user which needs to be updated</param>
+        void UpdateForUser(int userId);
     }
 }
