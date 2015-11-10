@@ -89,7 +89,5 @@ namespace WebServer.BusinessLogic
                 _userWithChangedData.AddOrUpdate(userWithChangedData, 0, (key, oldValue) => 0);
             }
         }
-
-        //TODO: Add IDisposable, canceling the achievementTask to prevent unexpected changes to the database.
     }
 }
