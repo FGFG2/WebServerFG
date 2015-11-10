@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
+using WebServer.BusinessLogic;
 using WebServer.DataContext;
 
 namespace WebServer
@@ -37,6 +38,8 @@ namespace WebServer
             // container.LoadConfiguration();
             
              container.RegisterType<IAchievementDb, AchievementDbAbstraction>();
+             container.RegisterType<IAchievementCalculatorDetector, AchievementCalculatorDetector>();
+             container.RegisterType<IAchievementCalculationManager, AchievementCalculationManager>(container.Resolve<ContainerControlledLifetimeManager>());
         }
     }
 }
