@@ -46,6 +46,18 @@ namespace WebServer.Tests.Controllers
         }
 
         [Test]
+        public void Test_SetMotor_NoData()
+        {
+            //Arrange
+            
+            //Act
+            var result = SystemUnderTest.SetMotor(new Dictionary<int, int>());
+
+            //Assert    
+            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        }                
+
+        [Test]
         public void Test_SetRudder()
         {
             //Arrange 
@@ -60,6 +72,19 @@ namespace WebServer.Tests.Controllers
         }
 
         [Test]
+        public void Test_SetRudder_NoData()
+        {
+            //Arrange
+
+
+            //Act
+            var result = SystemUnderTest.SetRudder(new Dictionary<int, int>());
+
+            //Assert
+            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        }
+
+        [Test]
         public void Test_SetIsConnected()
         {
             //Arrange 
@@ -71,6 +96,18 @@ namespace WebServer.Tests.Controllers
             Assert.That(()=>_smartPlaneTestUser.ConnectedDatas.First().IsConnected,Is.EqualTo(true));
             Assert.That(()=>_smartPlaneTestUser.ConnectedDatas.First().TimeStamp,Is.EqualTo(1));
             Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+        }
+
+        [Test]
+        public void Test_SetIsConnected_NoData()
+        {
+            //Arrange
+
+            //Act
+            var result = SystemUnderTest.SetIsConnected(new Dictionary<int, bool>());
+
+            //Assert
+            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
     }
 }
