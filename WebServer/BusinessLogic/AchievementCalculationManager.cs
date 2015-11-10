@@ -110,13 +110,13 @@ namespace WebServer.BusinessLogic
 
         public void UpdateForUser(int userId)
         {
-            _addUserToAchievementUpdateQueue(userWithChangedData);
+            _addUserToAchievementUpdateQueue(userId);
 
-            var addedUserMessage = $"Added user with ID {userWithChangedData.Id} to achievement update queue.";
+            var addedUserMessage = $"Added user with ID {userId} to achievement update queue.";
             _logger.Log(addedUserMessage, LogLevel.Info);
         }
 
-        private void _addUserToAchievementUpdateQueue(SmartPlaneUser userWithChangedData)
+        private void _addUserToAchievementUpdateQueue(int userId)
         {
             lock (_userWithChangedData)
             {
