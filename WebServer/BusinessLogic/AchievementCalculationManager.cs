@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WebServer.DataContext;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.BusinessLogic
@@ -21,9 +22,9 @@ namespace WebServer.BusinessLogic
         // dictionary serves well enough as a set (there is overhead by the values, but the self implementation would not be worth
         // the trouble. One million users would only lead to a memory overhead of 1 MB.
         private readonly ConcurrentDictionary<SmartPlaneUser, byte> _userWithChangedData;
-        private readonly Task _achievementCalculationTask;
         private readonly CancellationTokenSource _achievementCalculationCancelSource;
         private readonly IAchievementDb _achievementDb;
+        private readonly ILoggerFacade _logger;
 
         #endregion;
 
@@ -31,48 +32,71 @@ namespace WebServer.BusinessLogic
         /// Creates the Manager using the achievementDetector to find all available achievements.
         /// </summary>
         /// <param name="achievementDetector">Detector used to find the available achievements</param>
-        /// <param name="achievementDb"></param>
-        public AchievementCalculationManager(IAchievementCalculatorDetector achievementDetector, IAchievementDb achievementDb)
+        /// <param name="achievementDb">Instance of the achievement database.</param>
+        /// <param name="logger">Logger to use.</param>
+        public AchievementCalculationManager(IAchievementCalculatorDetector achievementDetector, IAchievementDb achievementDb, ILoggerFacade logger)
         {
             _achievementDb = achievementDb;
-            _achievementCalculators = achievementDetector.FindAllAchievementCalculator().ToList();
+            _logger = logger;
             _userWithChangedData = new ConcurrentDictionary<SmartPlaneUser,byte>();
 
+            _achievementCalculators = _getAvailableAchievementCalculators(achievementDetector);
+
             _achievementCalculationCancelSource = new CancellationTokenSource();
-            _achievementCalculationTask = new Task(_achievementCalculation, _achievementCalculationCancelSource.Token, TaskCreationOptions.LongRunning);
-            _achievementCalculationTask.Start();
+            var achievementCalculationTask = new Task(_achievementCalculationTaskAction, _achievementCalculationCancelSource.Token, TaskCreationOptions.LongRunning);
+            achievementCalculationTask.Start();
         }
 
-        private void _achievementCalculation()
+        private IList<IAchievementCalculator> _getAvailableAchievementCalculators(IAchievementCalculatorDetector achievementDetector)
+        {
+            var availableCalculators = achievementDetector.FindAllAchievementCalculator().ToList();
+
+            var countOfAvailableCalculatorsMessage = $"Got {availableCalculators.Count} available achievements.";
+            _logger.Log(countOfAvailableCalculatorsMessage, LogLevel.Info);
+
+            return availableCalculators;
+        }
+
+        #region Achievement calculation task
+        private void _achievementCalculationTaskAction()
         {
             while (_achievementCalculationCancelSource.IsCancellationRequested == false)
             {
-                var usersToUpdate = _getUsersToUpdate();
-                foreach (var user in usersToUpdate)
-                { 
-                    _calculateAchievementsForUser(user);
-                }
-
-                _achievementDb.SaveChanges();
+                _logger.Log("Starting to update achievements.", LogLevel.Debug);
+                _updateAchievements();
+                _logger.Log("Finished updating achievements.", LogLevel.Debug);
 
                 // Avoid busy-wait, Calculate each seconds to limit the load for the server.
                 Thread.Sleep(1000);
             }
         }
 
-        private IEnumerable<SmartPlaneUser> _getUsersToUpdate()
+        private void _updateAchievements()
+        {
+            var usersToUpdate = _getUsersToUpdate();
+            foreach (var user in usersToUpdate)
+            {
+                _calculateAchievementsForUser(user);
+            }
+            _achievementDb.SaveChanges();
+
+            var addedUserMessage = $"Updated the achievements of {usersToUpdate.Count} users.";
+            _logger.Log(addedUserMessage, LogLevel.Info);
+        }
+
+        private IList<SmartPlaneUser> _getUsersToUpdate()
         {
             //dump keys of concurrent dictionary to use them outside synchronized blocks. 
             //Clear the dictionary, so that already updated user are not going to be updated again when not needed.
-            IEnumerable<SmartPlaneUser> users;
-            lock (_userWithChangedData) 
+            IList<SmartPlaneUser> users;
+            lock (_userWithChangedData)
             {
-                users = _userWithChangedData.Keys;
+                users = _userWithChangedData.Keys.ToList();
                 _userWithChangedData.Clear();
             }
 
             return users;
-        } 
+        }
 
         private void _calculateAchievementsForUser(SmartPlaneUser user)
         {
@@ -80,10 +104,19 @@ namespace WebServer.BusinessLogic
             {
                 achievementCalculator.CalculateAchievementProgress(user);
             }
-        }
+        } 
+        #endregion
 
 
         public void UpdateForUser(int userId)
+        {
+            _addUserToAchievementUpdateQueue(userWithChangedData);
+
+            var addedUserMessage = $"Added user with ID {userWithChangedData.Id} to achievement update queue.";
+            _logger.Log(addedUserMessage, LogLevel.Info);
+        }
+
+        private void _addUserToAchievementUpdateQueue(SmartPlaneUser userWithChangedData)
         {
             lock (_userWithChangedData)
             {

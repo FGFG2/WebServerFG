@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Universial.Test;
 using WebServer.BusinessLogic;
 using WebServer.DataContext;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.Tests.BusinessLogic
@@ -27,7 +28,7 @@ namespace WebServer.Tests.BusinessLogic
             var achievementDbMock = Substitute.For<IAchievementDb>();
             achievementDbMock.GetSmartPlaneUserById(0).ReturnsForAnyArgs(_dummySmartPlaneUser);
 
-            SystemUnderTest = new AchievementCalculationManager(detector, achievementDbMock);
+            SystemUnderTest = new AchievementCalculationManager(detector, achievementDbMock, Substitute.For<ILoggerFacade>());
         }
 
         [Test]
