@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using NUnit.Framework;
-using WebServer.BusinessLogic;
+using WebServer.BusinessLogic.AchievementCalculators;
 using WebServer.Models;
 
-namespace WebServer.Tests.BusinessLogic
+namespace WebServer.Tests.BusinessLogic.AchievementCalculators
 {
     public class ConnectionAchievementCalculatorTest : AchievementTestBase<ConnectionAchievementCalculator>
     {

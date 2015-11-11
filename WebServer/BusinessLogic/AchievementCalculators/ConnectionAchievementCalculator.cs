@@ -2,7 +2,7 @@
 using System.Linq;
 using WebServer.Models;
 
-namespace WebServer.BusinessLogic
+namespace WebServer.BusinessLogic.AchievementCalculators
 {
     public class ConnectionAchievementCalculator : IAchievementCalculator
     {

@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Universial.Test;
 using WebServer.BusinessLogic;
+using WebServer.BusinessLogic.AchievementCalculators;
 
 namespace WebServer.Tests.BusinessLogic
 {
