@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using System.Web.Http.Results;
 using WebServer.BusinessLogic;
 using WebServer.DataContext;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.Controllers
@@ -19,19 +18,22 @@ namespace WebServer.Controllers
     {
         private readonly IAchievementDb _achievementDb;
         private readonly IAchievementCalculationManager _calculationManager;
+        private readonly ILoggerFacade _logger;
 
-        public PlaneDataController(IAchievementDb achievementDb, IAchievementCalculationManager calculationManager)
+        public PlaneDataController(IAchievementDb achievementDb, IAchievementCalculationManager calculationManager, ILoggerFacade logger)
         {
             _achievementDb = achievementDb;
             _calculationManager = calculationManager;
+            _logger = logger;
         }
 
         // POST api/SetMotor
         [Route("api/SetMotor")]
         public HttpResponseMessage SetMotor(Dictionary<int, int> motorMap)
         {
-            if (!motorMap.Any())
+            if (motorMap == null || !motorMap.Any())
             {
+                _logger.Log("SetMotor called, but received no data.", LogLevel.Info);
                 return new HttpResponseMessage(HttpStatusCode.NoContent);
             }
                         
@@ -41,6 +43,8 @@ namespace WebServer.Controllers
                 currentUser.MotorDatas.Add(new MotorData { TimeStamp = motorData.Key, Value = motorData.Value });
             }
             _achievementDb.SaveChanges();
+            _logger.Log($"Added {motorMap.Count} new entries with motor data to user with ID {currentUser.Id}.", LogLevel.Debug);
+
             _calculationManager.UpdateForUser(currentUser.Id);
             return new HttpResponseMessage(HttpStatusCode.Created);                         
         }
@@ -49,8 +53,9 @@ namespace WebServer.Controllers
         [Route("api/SetRuder")]
         public HttpResponseMessage SetRudder(Dictionary<int, int> rudderMap)
         {
-            if (!rudderMap.Any())
+            if (rudderMap == null || !rudderMap.Any())
             {
+                _logger.Log("SetRudder called, but received no data.", LogLevel.Info);
                 return new HttpResponseMessage(HttpStatusCode.NoContent);
             }
 
@@ -60,6 +65,8 @@ namespace WebServer.Controllers
                 currentUser.RudderDatas.Add(new RudderData {TimeStamp = rudderData.Key, Value = rudderData.Value});
             }
             _achievementDb.SaveChanges();
+            _logger.Log($"Added {rudderMap.Count} new entries with rudder data to user with ID {currentUser.Id}.", LogLevel.Debug);
+
             _calculationManager.UpdateForUser(currentUser.Id);
             return new HttpResponseMessage(HttpStatusCode.Created);
         }
@@ -68,8 +75,9 @@ namespace WebServer.Controllers
         [Route("api/SetIsConnected")]
         public HttpResponseMessage SetIsConnected(Dictionary<int, bool> connectionChanges)
         {
-            if (!connectionChanges.Any())
+            if (connectionChanges == null || !connectionChanges.Any())
             {
+                _logger.Log("SetIsConnected called, but received no data.", LogLevel.Info);
                 return new HttpResponseMessage(HttpStatusCode.NoContent);
             }
 
@@ -79,6 +87,8 @@ namespace WebServer.Controllers
                 currentUser.ConnectedDatas.Add(new ConnectedData {TimeStamp = connectionChange.Key, IsConnected = connectionChange.Value});
             }
             _achievementDb.SaveChanges();
+            _logger.Log($"Added {connectionChanges.Count} new entries with connection changes to user with ID {currentUser.Id}.", LogLevel.Debug);
+
             _calculationManager.UpdateForUser(currentUser.Id);
             return new HttpResponseMessage(HttpStatusCode.Created);
         }

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
-using Universial.Test;
 using WebServer.BusinessLogic;
 using WebServer.Controllers;
 using WebServer.DataContext;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.Tests.Controllers
@@ -26,7 +23,7 @@ namespace WebServer.Tests.Controllers
             base.SetUp();
             _achievementDbMock = Substitute.For<IAchievementDb>();
             _achievementCalculatorMock = Substitute.For<IAchievementCalculationManager>();
-            SystemUnderTest = new PlaneDataController(_achievementDbMock,_achievementCalculatorMock);
+            SystemUnderTest = new PlaneDataController(_achievementDbMock,_achievementCalculatorMock, Substitute.For<ILoggerFacade>());
             _smartPlaneTestUser = CreateSmartPlaneUser();
             _achievementDbMock.GetSmartPlaneUserById(0).ReturnsForAnyArgs(_smartPlaneTestUser);
         }
@@ -34,8 +31,6 @@ namespace WebServer.Tests.Controllers
         [Test]
         public void Test_SetMotor()
         {
-            //Arrange             
-            
             //Act
             var result = SystemUnderTest.SetMotor(new Dictionary<int, int> {{1, 1}});
 
@@ -46,22 +41,28 @@ namespace WebServer.Tests.Controllers
         }
 
         [Test]
-        public void Test_SetMotor_NoData()
+        public void Test_SetMotor_NoData_Empty_List()
         {
-            //Arrange
-            
             //Act
             var result = SystemUnderTest.SetMotor(new Dictionary<int, int>());
 
             //Assert    
             Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
-        }                
+        }
+
+        [Test]
+        public void Test_SetMotor_NoData_Null()
+        {
+            //Act
+            var result = SystemUnderTest.SetMotor(null);
+
+            //Assert    
+            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        }
 
         [Test]
         public void Test_SetRudder()
         {
-            //Arrange 
-           
             //Act
             var result = SystemUnderTest.SetRudder(new Dictionary<int, int> { { 1, 1 } });
             
@@ -72,11 +73,8 @@ namespace WebServer.Tests.Controllers
         }
 
         [Test]
-        public void Test_SetRudder_NoData()
+        public void Test_SetRudder_NoData_Empty_List()
         {
-            //Arrange
-
-
             //Act
             var result = SystemUnderTest.SetRudder(new Dictionary<int, int>());
 
@@ -85,10 +83,18 @@ namespace WebServer.Tests.Controllers
         }
 
         [Test]
+        public void Test_SetRudder_NoData_Null()
+        {
+            //Act
+            var result = SystemUnderTest.SetRudder(null);
+
+            //Assert    
+            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        }
+
+        [Test]
         public void Test_SetIsConnected()
         {
-            //Arrange 
-
             //Act
             var result = SystemUnderTest.SetIsConnected(new Dictionary<int, bool> { { 1, true } });
 
@@ -99,12 +105,20 @@ namespace WebServer.Tests.Controllers
         }
 
         [Test]
-        public void Test_SetIsConnected_NoData()
+        public void Test_SetIsConnected_NoData_Empty_List()
         {
-            //Arrange
-
             //Act
             var result = SystemUnderTest.SetIsConnected(new Dictionary<int, bool>());
+
+            //Assert
+            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        }
+
+        [Test]
+        public void Test_SetIsConnected_NoData_Null()
+        {
+            //Act
+            var result = SystemUnderTest.SetIsConnected(null);
 
             //Assert
             Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
