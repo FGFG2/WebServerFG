@@ -22,7 +22,7 @@ namespace WebServer.BusinessLogic
 
             return from type in assemblyOfAchievementCalculators.GetTypes()
                    let isCalculator = type.GetInterfaces().Contains(typeof (IAchievementCalculator))
-                   where isCalculator 
+                   where isCalculator && type.IsAbstract == false 
                    select Activator.CreateInstance(type) as IAchievementCalculator;
         }
     }
