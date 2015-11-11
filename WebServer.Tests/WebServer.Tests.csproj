@@ -113,6 +113,7 @@
     <Compile Include="BusinessLogic\AchievementCalculationManagerTest.cs" />
     <Compile Include="AchievementTestBase.cs" />
     <Compile Include="BusinessLogic\AchievementCalculatorDetectorTest.cs" />
+    <Compile Include="BusinessLogic\AchievementCalculators\AchievementCalculatorTest.cs" />
     <Compile Include="BusinessLogic\AchievementCalculators\ConnectionAchievementCalculatorTest.cs" />
     <Compile Include="Controllers\AchievementControllerTest.cs" />
     <Compile Include="Controllers\PlaneDataControllerTest.cs" />

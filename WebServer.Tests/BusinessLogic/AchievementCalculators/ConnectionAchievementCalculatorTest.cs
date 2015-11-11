@@ -13,19 +13,6 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             base.SetUp();
             SystemUnderTest = new ConnectionAchievementCalculator();
         }
-        
-        [Test]
-        public void Test_if_calculator_adds_a_achievement_to_the_user()
-        {
-            //Arrange 
-            var user = CreateSmartPlaneUser();
-
-            //Act
-            SystemUnderTest.CalculateAchievementProgress(user);
-
-            //Assert
-            Assert.That(()=>user.Achievements.Any(a=>a.Name.Equals(ConnectionAchievementCalculator.AchievementName)),Is.True);
-        }
 
         [Test]
         public void Test_if_calculator_calculates_a_achievement_correct()
