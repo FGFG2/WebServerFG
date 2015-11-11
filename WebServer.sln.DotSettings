@@ -1,0 +1,53 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Description/@EntryValue">AchievementCalculator</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Text/@EntryValue">using System;&#xD;
+using WebServer.Models;&#xD;
+&#xD;
+namespace $NAMESPACE$&#xD;
+{&#xD;
+	public class $CLASS$ : AchievementCalculator&#xD;
+    {&#xD;
+        public const string AchievementName = "$NAME$";&#xD;
+&#xD;
+        public EnduranceAchievementCalculator() : base(AchievementName)&#xD;
+        {&#xD;
+        }&#xD;
+&#xD;
+        protected override int CalculateProgress(SmartPlaneUser targetUser)&#xD;
+        {&#xD;
+            throw new NotImplementedException();&#xD;
+        }&#xD;
+&#xD;
+        protected override Achievement CreateAchievement()&#xD;
+        {&#xD;
+            return new Achievement&#xD;
+            {&#xD;
+                Name = AchievementName,&#xD;
+                Description = "$DESCRIPTION$",&#xD;
+                Progress = 0,&#xD;
+                ImageUrl = ""&#xD;
+            };&#xD;
+        }&#xD;
+	}&#xD;
+}</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/CustomProperties/=FileName/@EntryIndexedValue">AchievementCalculator</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/CustomProperties/=Extension/@EntryIndexedValue">cs</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/CustomProperties/=ValidateFileName/@EntryIndexedValue">False</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Applicability/=File/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Scope/=E8F0594528C33E45BBFEC6CFE851095D/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Field/=NAMESPACE/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Field/=NAMESPACE/Expression/@EntryValue">fileDefaultNamespace()</s:String>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Field/=NAMESPACE/InitialRange/@EntryValue">-1</s:Int64>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Field/=NAMESPACE/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Field/=CLASS/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Field/=CLASS/Expression/@EntryValue">getFileNameWithoutExtension()</s:String>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Field/=CLASS/InitialRange/@EntryValue">-1</s:Int64>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Field/=CLASS/Order/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Field/=NAME/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Field/=NAME/Order/@EntryValue">2</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Field/=DESCRIPTION/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=ED948033F5A36A41AF0EF17210B81E4A/Field/=DESCRIPTION/Order/@EntryValue">3</s:Int64></wpf:ResourceDictionary>
