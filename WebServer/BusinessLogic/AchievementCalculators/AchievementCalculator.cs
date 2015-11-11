@@ -18,6 +18,10 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         public void CalculateAchievementProgress(SmartPlaneUser targetUser)
         {
             var relatedAchievement = _addAchievementWhenMissing(targetUser);
+            if (relatedAchievement.Progress == 100)
+            {
+                return;
+            }
             relatedAchievement.Progress = Convert.ToByte(CalculateProgress(targetUser));
         }
 
