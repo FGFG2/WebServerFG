@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -36,17 +37,24 @@ namespace WebServer.Controllers
                 _logger.Log("SetMotor called, but received no data.", LogLevel.Info);
                 return new HttpResponseMessage(HttpStatusCode.NoContent);
             }
-                        
-            var currentUser = _achievementDb.GetSmartPlaneUserById(0);
-            foreach (var motorData in motorMap)
-            {
-                currentUser.MotorDatas.Add(new MotorData { TimeStamp = motorData.Key, Value = motorData.Value });
-            }
-            _achievementDb.SaveChanges();
-            _logger.Log($"Added {motorMap.Count} new entries with motor data to user with ID {currentUser.Id}.", LogLevel.Debug);
 
-            _calculationManager.UpdateForUser(currentUser.Id);
-            return new HttpResponseMessage(HttpStatusCode.Created);                         
+            try
+            {
+                var currentUser = _achievementDb.GetSmartPlaneUserById(0);
+                foreach (var motorData in motorMap)
+                {
+                    currentUser.MotorDatas.Add(new MotorData { TimeStamp = motorData.Key, Value = motorData.Value });
+                }
+                _achievementDb.SaveChanges();
+                _logger.Log($"Added {motorMap.Count} new entries with motor data to user with ID {currentUser.Id}.", LogLevel.Debug);
+
+                _calculationManager.UpdateForUser(currentUser.Id);
+                return new HttpResponseMessage(HttpStatusCode.Created);
+            }
+            catch (Exception exception)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, exception.Message);                
+            }                                            
         }
 
         // POST api/SetRuder
@@ -59,16 +67,23 @@ namespace WebServer.Controllers
                 return new HttpResponseMessage(HttpStatusCode.NoContent);
             }
 
-            var currentUser = _achievementDb.GetSmartPlaneUserById(0);
-            foreach (var rudderData in rudderMap)
+            try
             {
-                currentUser.RudderDatas.Add(new RudderData {TimeStamp = rudderData.Key, Value = rudderData.Value});
-            }
-            _achievementDb.SaveChanges();
-            _logger.Log($"Added {rudderMap.Count} new entries with rudder data to user with ID {currentUser.Id}.", LogLevel.Debug);
+                var currentUser = _achievementDb.GetSmartPlaneUserById(0);
+                foreach (var rudderData in rudderMap)
+                {
+                    currentUser.RudderDatas.Add(new RudderData { TimeStamp = rudderData.Key, Value = rudderData.Value });
+                }
+                _achievementDb.SaveChanges();
+                _logger.Log($"Added {rudderMap.Count} new entries with rudder data to user with ID {currentUser.Id}.", LogLevel.Debug);
 
-            _calculationManager.UpdateForUser(currentUser.Id);
-            return new HttpResponseMessage(HttpStatusCode.Created);
+                _calculationManager.UpdateForUser(currentUser.Id);
+                return new HttpResponseMessage(HttpStatusCode.Created);
+            }
+            catch (Exception exception)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, exception.Message);
+            }           
         }
 
         // POST api/SetIsConnected
@@ -81,16 +96,23 @@ namespace WebServer.Controllers
                 return new HttpResponseMessage(HttpStatusCode.NoContent);
             }
 
-            var currentUser = _achievementDb.GetSmartPlaneUserById(0);
-            foreach (var connectionChange in connectionChanges)
+            try
             {
-                currentUser.ConnectedDatas.Add(new ConnectedData {TimeStamp = connectionChange.Key, IsConnected = connectionChange.Value});
-            }
-            _achievementDb.SaveChanges();
-            _logger.Log($"Added {connectionChanges.Count} new entries with connection changes to user with ID {currentUser.Id}.", LogLevel.Debug);
+                var currentUser = _achievementDb.GetSmartPlaneUserById(0);
+                foreach (var connectionChange in connectionChanges)
+                {
+                    currentUser.ConnectedDatas.Add(new ConnectedData { TimeStamp = connectionChange.Key, IsConnected = connectionChange.Value });
+                }
+                _achievementDb.SaveChanges();
+                _logger.Log($"Added {connectionChanges.Count} new entries with connection changes to user with ID {currentUser.Id}.", LogLevel.Debug);
 
-            _calculationManager.UpdateForUser(currentUser.Id);
-            return new HttpResponseMessage(HttpStatusCode.Created);
+                _calculationManager.UpdateForUser(currentUser.Id);
+                return new HttpResponseMessage(HttpStatusCode.Created);
+            }
+            catch (Exception exception)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, exception.Message);                
+            }            
         }
     }
 }
