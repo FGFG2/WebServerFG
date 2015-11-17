@@ -236,6 +236,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="BusinessLogic\AchievementCalculatorDetector.cs" />
+    <Compile Include="BusinessLogic\AchievementCalculators\AchievementCalculationHelper.cs" />
     <Compile Include="BusinessLogic\AchievementCalculators\AchievementCalculator.cs" />
     <Compile Include="BusinessLogic\AchievementCalculators\ConnectionAchievementCalculator.cs" />
     <Compile Include="BusinessLogic\AchievementCalculationManager.cs" />
