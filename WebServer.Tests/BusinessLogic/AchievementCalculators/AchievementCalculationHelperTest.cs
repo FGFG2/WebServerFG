@@ -22,8 +22,8 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             //Arrange
             const int startTime = 0;
             const int endTime = 10;
-            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, IsConnected = true });
-            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, IsConnected = false });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, Value = true });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, Value = false });
 
             //Act
             var result = AchievementCalculationHelper.GetEndAndStartTimesOfAllConnections(SystemUnderTest);
@@ -42,8 +42,8 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             var endTimes = new[] { 9, 99, 999, 1001 };
             for (var i = 0; i < startTimes.Length; i++)
             {
-                SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTimes[i], IsConnected = true });
-                SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTimes[i], IsConnected = false });
+                SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTimes[i], Value = true });
+                SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTimes[i], Value = false });
             }
 
             //Act
@@ -61,7 +61,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         public void Test_if_GetEndAndStartTimesOfAllConnections_returns_no_values_with_no_end_Connection()
         {
             //Arrange
-            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, IsConnected = true });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
 
             //Act
             var result = AchievementCalculationHelper.GetEndAndStartTimesOfAllConnections(SystemUnderTest);
@@ -74,7 +74,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         public void Test_if_GetEndAndStartTimesOfAllConnections_returns_no_values_with_no_start_Connection()
         {
             //Arrange
-            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 1000, IsConnected = false });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 1000, Value = false });
 
             //Act
             var result = AchievementCalculationHelper.GetEndAndStartTimesOfAllConnections(SystemUnderTest);
@@ -89,9 +89,9 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             //Arrange
             const int startTime = 0;
             const int endTime = 10;
-            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, IsConnected = true });
-            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime + 1, IsConnected = true });
-            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, IsConnected = false });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, Value = true });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime + 1, Value = true });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, Value = false });
 
             //Act
             var result = AchievementCalculationHelper.GetEndAndStartTimesOfAllConnections(SystemUnderTest);
@@ -108,9 +108,9 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             //Arrange
             const int startTime = 0;
             const int endTime = 10;
-            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, IsConnected = true });
-            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, IsConnected = false });
-            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime + 1, IsConnected = false });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, Value = true });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, Value = false });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime + 1, Value = false });
 
             //Act
             var result = AchievementCalculationHelper.GetEndAndStartTimesOfAllConnections(SystemUnderTest);

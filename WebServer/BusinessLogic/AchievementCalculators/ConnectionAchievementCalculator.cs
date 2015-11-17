@@ -13,7 +13,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
 
         protected override int CalculateProgress(SmartPlaneUser targetUser)
         {
-            return targetUser.ConnectedDatas.Any(c=>c.IsConnected) ? 100 : 0;
+            return targetUser.ConnectedDatas.Any(c=>c.Value) ? 100 : 0;
         }
 
         protected override Achievement CreateAchievement()

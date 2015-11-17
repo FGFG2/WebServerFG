@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Microsoft.Practices.ObjectBuilder2;
+using Newtonsoft.Json.Serialization;
 using WebServer.BusinessLogic;
 using WebServer.DataContext;
 using WebServer.Logging;
@@ -28,93 +30,77 @@ namespace WebServer.Controllers
             _logger = logger;
         }
 
-        // POST api/SetMotor
-        [Route("api/SetMotor")]
-        public HttpResponseMessage SetMotor(Dictionary<long, int> motorMap)
+        private bool _checkData<T>(Dictionary<long,T> map)
         {
-            if (motorMap == null || !motorMap.Any())
+            if (map == null || !map.Any())
             {
-                _logger.Log("SetMotor called, but received no data.", LogLevel.Info);
+                return false;
+            }
+            return true;
+        }
+
+        private HttpResponseMessage _saveChanges(SmartPlaneUser targetUser)
+        {
+            _achievementDb.SaveChanges();
+            _calculationManager.UpdateForUser(targetUser.Id);
+            return new HttpResponseMessage(HttpStatusCode.Created);
+        }
+       
+
+        private HttpResponseMessage _addDataToUser<DataValueType, AchievementDataType>(SmartPlaneUser targetUser, IList<AchievementDataType> targetList, Dictionary<long, DataValueType> dataMap) 
+            where AchievementDataType : AchievementData<DataValueType>, new()
+        {
+            if (!_checkData(dataMap))
+            {
+                _logger.Log("Setter called, but received no data.", LogLevel.Info);
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
 
             try
             {
-                var currentUser = _achievementDb.GetSmartPlaneUserById(0);
-                foreach (var motorData in motorMap)
+                foreach (var dataValue in dataMap)
                 {
-                    currentUser.MotorDatas.Add(new MotorData { TimeStamp = motorData.Key, Value = motorData.Value });
+                    targetList.Add(new AchievementDataType { TimeStamp = dataValue.Key, Value = dataValue.Value });
                 }
-                _achievementDb.SaveChanges();
-                _logger.Log($"Added {motorMap.Count} new entries with motor data to user with ID {currentUser.Id}.", LogLevel.Debug);
+                _logger.Log($"Added {dataMap.Count} new entries to user with ID {targetUser.Id}.", LogLevel.Debug);
 
-                _calculationManager.UpdateForUser(currentUser.Id);
-                return new HttpResponseMessage(HttpStatusCode.Created);
+                return _saveChanges(targetUser);
             }
             catch (Exception exception)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, exception.Message);                
-            }                                            
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, exception.Message);
+            }
+            
         }
+
+        #region apiSetter
+        // POST api/SetMotor
+        [Route("api/SetMotor")]
+        public HttpResponseMessage SetMotor(Dictionary<long, int> motorMap)
+        {
+            var currentUser = _getCurrentUser();               
+            return _addDataToUser(currentUser, currentUser.MotorDatas, motorMap);
+         }
 
         // POST api/SetRuder
         [Route("api/SetRuder")]
         public HttpResponseMessage SetRudder(Dictionary<long, int> rudderMap)
         {
-            if (rudderMap == null || !rudderMap.Any())
-            {
-                _logger.Log("SetRudder called, but received no data.", LogLevel.Info);
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
 
-            try
-            {
-                var currentUser = _achievementDb.GetSmartPlaneUserById(0);
-                foreach (var rudderData in rudderMap)
-                {
-                    currentUser.RudderDatas.Add(new RudderData { TimeStamp = rudderData.Key, Value = rudderData.Value });
-                }
-                _achievementDb.SaveChanges();
-                _logger.Log($"Added {rudderMap.Count} new entries with rudder data to user with ID {currentUser.Id}.", LogLevel.Debug);
-
-                _calculationManager.UpdateForUser(currentUser.Id);
-                return new HttpResponseMessage(HttpStatusCode.Created);
-            }
-            catch (Exception exception)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, exception.Message);
-            }           
+            var currentUser = _getCurrentUser();
+            return _addDataToUser(currentUser, currentUser.RudderDatas, rudderMap);           
         }
 
         // POST api/SetIsConnected
         [Route("api/SetIsConnected")]
         public HttpResponseMessage SetIsConnected(Dictionary<long, bool> connectionChanges)
         {
-            if (connectionChanges == null || !connectionChanges.Any())
-            {
-                _logger.Log("SetIsConnected called, but received no data.", LogLevel.Info);
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
-
-            try
-            {
-                var currentUser = _achievementDb.GetSmartPlaneUserById(0);
-                foreach (var connectionChange in connectionChanges)
-                {
-                    currentUser.ConnectedDatas.Add(new ConnectedData { TimeStamp = connectionChange.Key, IsConnected = connectionChange.Value });
-                }
-                _achievementDb.SaveChanges();
-                _logger.Log($"Added {connectionChanges.Count} new entries with connection changes to user with ID {currentUser.Id}.", LogLevel.Debug);
-
-                _calculationManager.UpdateForUser(currentUser.Id);
-                return new HttpResponseMessage(HttpStatusCode.Created);
-            }
-            catch (Exception exception)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, exception.Message);                
-            }            
+            var currentUser = _getCurrentUser();
+            return _addDataToUser(currentUser, currentUser.ConnectedDatas, connectionChanges);           
         }
+        #endregion
 
+        #region apiGetter
         // GET: api/MotorDatas
         [Route("api/MotorDatas")]
         public IQueryable<MotorData> GetMotorDatas()
@@ -137,7 +123,8 @@ namespace WebServer.Controllers
         {
             var currentUser = _getCurrentUser();
             return currentUser.RudderDatas.AsQueryable();
-        }
+        } 
+        #endregion
 
 
         private SmartPlaneUser _getCurrentUser()
