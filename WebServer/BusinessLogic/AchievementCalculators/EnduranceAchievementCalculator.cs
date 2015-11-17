@@ -18,7 +18,11 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         {
             var flights = _getEndTimesAndStartTimesOfAllConnections(targetUser);
             var flightTimes = _getFlightTimes(flights, targetUser);
-            var longestFlight = flightTimes.Max();
+            if (flightTimes.Any() == false)
+            {
+                return 0;
+            }
+            var longestFlight = flightTimes.Max();            
             return longestFlight / OnePercentStep;
         }
 
@@ -31,6 +35,10 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         {
             var startTimes = targetUser.ConnectedDatas.Where(c => c.IsConnected).Select(c => c.TimeStamp);
             var endTimes = targetUser.ConnectedDatas.Where(c => c.IsConnected == false).Select(c => c.TimeStamp).ToList();
+            if(endTimes.Count == 0)
+            {
+                yield break;
+            }
             foreach (var startTime in startTimes)
             {
                 var endTime = endTimes.Where(e => e >= startTime).Min();

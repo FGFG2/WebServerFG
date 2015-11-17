@@ -114,5 +114,36 @@ namespace WebServer.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, exception.Message);                
             }            
         }
+
+        // GET: api/MotorDatas
+        [Route("api/MotorDatas")]
+        public IQueryable<MotorData> GetMotorDatas()
+        {
+            var currentUser = _getCurrentUser();
+            return currentUser.MotorDatas.AsQueryable();
+        }
+
+        // GET: api/ConnectedDatas
+        [Route("api/ConnectedDatas")]
+        public IQueryable<ConnectedData> GetConnectedDatas()
+        {
+            var currentUser = _getCurrentUser();
+            return currentUser.ConnectedDatas.AsQueryable();
+        }
+
+        // GET: api/RudderDatas
+        [Route("api/RudderDatas")]
+        public IQueryable<RudderData> GetRudderDatas()
+        {
+            var currentUser = _getCurrentUser();
+            return currentUser.RudderDatas.AsQueryable();
+        }
+
+
+        private SmartPlaneUser _getCurrentUser()
+        {
+            var currentUser = _achievementDb.GetSmartPlaneUserById(0);
+            return currentUser;
+        }
     }
 }
