@@ -99,7 +99,7 @@ namespace WebServer.Tests.Controllers
             var result = SystemUnderTest.SetIsConnected(new Dictionary<long, bool> { { 1, true } });
 
             //Assert
-            Assert.That(()=>_smartPlaneTestUser.ConnectedDatas.First().IsConnected,Is.EqualTo(true));
+            Assert.That(()=>_smartPlaneTestUser.ConnectedDatas.First().Value,Is.EqualTo(true));
             Assert.That(()=>_smartPlaneTestUser.ConnectedDatas.First().TimeStamp,Is.EqualTo(1));
             Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
         }
@@ -176,14 +176,14 @@ namespace WebServer.Tests.Controllers
         public void Test_GetConnectedDatas()
         {
             //Arrange
-            _smartPlaneTestUser.ConnectedDatas.Add(new ConnectedData { TimeStamp = 10, IsConnected = true });
+            _smartPlaneTestUser.ConnectedDatas.Add(new ConnectedData { TimeStamp = 10, Value = true });
 
             //Act
             var result = SystemUnderTest.GetConnectedDatas();
 
             //Assert
             Assert.That(() => result.First().TimeStamp, Is.EqualTo(10));
-            Assert.That(() => result.First().IsConnected, Is.True);
+            Assert.That(() => result.First().Value, Is.True);
         }
 
         [Test]

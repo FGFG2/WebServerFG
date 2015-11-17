@@ -28,7 +28,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, IsConnected = true });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
             for (int i = 0; i < progress/10; i++)
             {                
                 user.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 25 });
@@ -36,7 +36,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
                 user.MotorDatas.Add(new MotorData { TimeStamp = 15000, Value = 255 });
                 user.MotorDatas.Add(new MotorData { TimeStamp = 15000, Value = 25 });
             }
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 15000, IsConnected = false });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 15000, Value = false });
 
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);
@@ -50,22 +50,22 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, IsConnected = true });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
             user.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 25 });
             //1st Achievement
             user.MotorDatas.Add(new MotorData { TimeStamp = 500, Value = 255 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 800, Value = 255 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 8000, Value = 255 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 5000, Value = 0 });
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 6000, IsConnected = false });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 6000, Value = false });
 
             //2nd achievement
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 7000, IsConnected = true });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 7000, Value = true });
             user.MotorDatas.Add(new MotorData { TimeStamp = 8000, Value = 255 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 9000, Value = 255 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 15000, Value = 255 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 20000, Value = 0 });
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 21000, IsConnected = false });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 21000, Value = false });
 
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);

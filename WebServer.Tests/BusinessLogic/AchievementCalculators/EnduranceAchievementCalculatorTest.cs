@@ -26,10 +26,10 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange 
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, IsConnected = true });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, Value = true });
             user.MotorDatas.Add(new MotorData { TimeStamp = startTime, Value = 1 });
             user.MotorDatas.Add(new MotorData { TimeStamp = endTime, Value = 0 });
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, IsConnected = false });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, Value = false });
 
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);
@@ -43,14 +43,14 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange 
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, IsConnected = true });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
             user.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 1 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 50 * OnePercentStep, Value = 0 });
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 50 * OnePercentStep, IsConnected = false });//First flight is over
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 50 * OnePercentStep +1, IsConnected = true });//Start the secound flight
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 50 * OnePercentStep, Value = false });//First flight is over
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 50 * OnePercentStep +1, Value = true });//Start the secound flight
             user.MotorDatas.Add(new MotorData { TimeStamp = 50 * OnePercentStep +2, Value = 1 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 100 * OnePercentStep +2, Value = 0 });
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 100 * OnePercentStep + 2, IsConnected = false });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 100 * OnePercentStep + 2, Value = false });
 
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);
@@ -64,12 +64,12 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange 
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, IsConnected = true });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
             user.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 1 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 50 * OnePercentStep, Value = 0 });//Flight is not over
             user.MotorDatas.Add(new MotorData { TimeStamp = 50 * OnePercentStep + 2, Value = 1 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 100 * OnePercentStep, Value = 0 });
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 100 * OnePercentStep, IsConnected = false });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 100 * OnePercentStep, Value = false });
 
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);
@@ -83,9 +83,9 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange 
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, IsConnected = true });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
             user.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 1 });
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 100 * OnePercentStep +1, IsConnected = false });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 100 * OnePercentStep +1, Value = false });
             
             //Assert
             Assert.That(() => SystemUnderTest.CalculateAchievementProgress(user),Throws.Nothing);
@@ -96,10 +96,10 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange 
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, IsConnected = true });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
             user.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 0 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 50 * OnePercentStep, Value = 1 });
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 50 * OnePercentStep, IsConnected = false });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 50 * OnePercentStep, Value = false });
 
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);
@@ -113,9 +113,9 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange 
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, IsConnected = true });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
             user.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 1 });
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 50 * OnePercentStep, IsConnected = false });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 50 * OnePercentStep, Value = false });
 
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);
@@ -129,11 +129,11 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange 
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 50*OnePercentStep, IsConnected = true });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 50*OnePercentStep, Value = true });
             user.MotorDatas.Add(new MotorData { TimeStamp = 50 * OnePercentStep, Value = 1 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 100 * OnePercentStep, Value = 0 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 1 });
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 100 * OnePercentStep, IsConnected = false });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 100 * OnePercentStep, Value = false });
 
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);

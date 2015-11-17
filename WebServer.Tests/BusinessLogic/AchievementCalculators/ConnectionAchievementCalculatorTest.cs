@@ -19,7 +19,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange 
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { IsConnected = true, TimeStamp = 0 });
+            user.ConnectedDatas.Add(new ConnectedData { Value = true, TimeStamp = 0 });
 
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);
@@ -33,7 +33,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange 
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { IsConnected = false, TimeStamp = 0 });
+            user.ConnectedDatas.Add(new ConnectedData { Value = false, TimeStamp = 0 });
 
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);

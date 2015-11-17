@@ -3,11 +3,8 @@
     /// <summary>
     /// Dataclass for a rudder of the plane
     /// </summary>
-    public class RudderData : AchievementData
+    public class RudderData : AchievementData<int>
     {
-        /// <summary>
-        /// The specific calue of a Rudder
-        /// </summary>
-        public virtual int Value { get; set; }
+
     }
 }

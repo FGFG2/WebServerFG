@@ -85,8 +85,8 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         /// <returns></returns>
         private IEnumerable<Tuple<long, long>> _getEndTimesAndStartTimesOfAllConnections(SmartPlaneUser targetUser)
         {
-            var startTimes = targetUser.ConnectedDatas.Where(c => c.IsConnected).Select(c => c.TimeStamp);
-            var endTimes = targetUser.ConnectedDatas.Where(c => c.IsConnected == false).Select(c => c.TimeStamp).ToList();
+            var startTimes = targetUser.ConnectedDatas.Where(c => c.Value).Select(c => c.TimeStamp);
+            var endTimes = targetUser.ConnectedDatas.Where(c => c.Value == false).Select(c => c.TimeStamp).ToList();
             if (endTimes.Count == 0)
             {
                 yield break;
