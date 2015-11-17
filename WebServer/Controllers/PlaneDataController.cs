@@ -35,7 +35,7 @@ namespace WebServer.Controllers
             if (motorMap == null || !motorMap.Any())
             {
                 _logger.Log("SetMotor called, but received no data.", LogLevel.Info);
-                return new HttpResponseMessage(HttpStatusCode.NoContent);
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
 
             try
@@ -64,7 +64,7 @@ namespace WebServer.Controllers
             if (rudderMap == null || !rudderMap.Any())
             {
                 _logger.Log("SetRudder called, but received no data.", LogLevel.Info);
-                return new HttpResponseMessage(HttpStatusCode.NoContent);
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
 
             try
@@ -93,7 +93,7 @@ namespace WebServer.Controllers
             if (connectionChanges == null || !connectionChanges.Any())
             {
                 _logger.Log("SetIsConnected called, but received no data.", LogLevel.Info);
-                return new HttpResponseMessage(HttpStatusCode.NoContent);
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
 
             try

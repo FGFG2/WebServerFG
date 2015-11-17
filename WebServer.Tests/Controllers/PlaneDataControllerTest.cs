@@ -47,7 +47,7 @@ namespace WebServer.Tests.Controllers
             var result = SystemUnderTest.SetMotor(new Dictionary<int, int>());
 
             //Assert    
-            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace WebServer.Tests.Controllers
             var result = SystemUnderTest.SetMotor(null);
 
             //Assert    
-            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [Test]
@@ -79,7 +79,7 @@ namespace WebServer.Tests.Controllers
             var result = SystemUnderTest.SetRudder(new Dictionary<int, int>());
 
             //Assert
-            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [Test]
@@ -89,7 +89,7 @@ namespace WebServer.Tests.Controllers
             var result = SystemUnderTest.SetRudder(null);
 
             //Assert    
-            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [Test]
@@ -111,7 +111,7 @@ namespace WebServer.Tests.Controllers
             var result = SystemUnderTest.SetIsConnected(new Dictionary<int, bool>());
 
             //Assert
-            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [Test]
@@ -121,7 +121,7 @@ namespace WebServer.Tests.Controllers
             var result = SystemUnderTest.SetIsConnected(null);
 
             //Assert
-            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+            Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
     }
 }
