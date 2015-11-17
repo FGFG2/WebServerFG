@@ -8,6 +8,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
     public class EnduranceAchievementCalculator : AchievementCalculator
     {
         public const string AchievementName = "Ausdauer";
+        public const int OnePercentStep = 600;
 
         public EnduranceAchievementCalculator() : base(AchievementName)
         {
@@ -18,7 +19,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
             var flights = _getEndTimesAndStartTimesOfAllConnections(targetUser);
             var flightTimes = _getFlightTimes(flights, targetUser);
             var longestFlight = flightTimes.Max();
-            return longestFlight / 6000;
+            return longestFlight / OnePercentStep;
         }
 
         /// <summary>
