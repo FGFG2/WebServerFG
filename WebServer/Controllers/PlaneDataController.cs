@@ -30,7 +30,7 @@ namespace WebServer.Controllers
 
         // POST api/SetMotor
         [Route("api/SetMotor")]
-        public HttpResponseMessage SetMotor(Dictionary<int, int> motorMap)
+        public HttpResponseMessage SetMotor(Dictionary<long, int> motorMap)
         {
             if (motorMap == null || !motorMap.Any())
             {
@@ -59,7 +59,7 @@ namespace WebServer.Controllers
 
         // POST api/SetRuder
         [Route("api/SetRuder")]
-        public HttpResponseMessage SetRudder(Dictionary<int, int> rudderMap)
+        public HttpResponseMessage SetRudder(Dictionary<long, int> rudderMap)
         {
             if (rudderMap == null || !rudderMap.Any())
             {
@@ -88,7 +88,7 @@ namespace WebServer.Controllers
 
         // POST api/SetIsConnected
         [Route("api/SetIsConnected")]
-        public HttpResponseMessage SetIsConnected(Dictionary<int, bool> connectionChanges)
+        public HttpResponseMessage SetIsConnected(Dictionary<long, bool> connectionChanges)
         {
             if (connectionChanges == null || !connectionChanges.Any())
             {

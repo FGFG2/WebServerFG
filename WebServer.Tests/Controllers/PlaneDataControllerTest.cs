@@ -32,7 +32,7 @@ namespace WebServer.Tests.Controllers
         public void Test_SetMotor()
         {
             //Act
-            var result = SystemUnderTest.SetMotor(new Dictionary<int, int> {{1, 1}});
+            var result = SystemUnderTest.SetMotor(new Dictionary<long, int> {{1, 1}});
 
             //Assert
             Assert.That(()=>_smartPlaneTestUser.MotorDatas.First().Value,Is.EqualTo(1));
@@ -44,7 +44,7 @@ namespace WebServer.Tests.Controllers
         public void Test_SetMotor_NoData_Empty_List()
         {
             //Act
-            var result = SystemUnderTest.SetMotor(new Dictionary<int, int>());
+            var result = SystemUnderTest.SetMotor(new Dictionary<long, int>());
 
             //Assert    
             Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
@@ -64,7 +64,7 @@ namespace WebServer.Tests.Controllers
         public void Test_SetRudder()
         {
             //Act
-            var result = SystemUnderTest.SetRudder(new Dictionary<int, int> { { 1, 1 } });
+            var result = SystemUnderTest.SetRudder(new Dictionary<long, int> { { 1, 1 } });
             
             //Assert
             Assert.That(()=>_smartPlaneTestUser.RudderDatas.First().Value,Is.EqualTo(1));
@@ -76,7 +76,7 @@ namespace WebServer.Tests.Controllers
         public void Test_SetRudder_NoData_Empty_List()
         {
             //Act
-            var result = SystemUnderTest.SetRudder(new Dictionary<int, int>());
+            var result = SystemUnderTest.SetRudder(new Dictionary<long, int>());
 
             //Assert
             Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
@@ -96,7 +96,7 @@ namespace WebServer.Tests.Controllers
         public void Test_SetIsConnected()
         {
             //Act
-            var result = SystemUnderTest.SetIsConnected(new Dictionary<int, bool> { { 1, true } });
+            var result = SystemUnderTest.SetIsConnected(new Dictionary<long, bool> { { 1, true } });
 
             //Assert
             Assert.That(()=>_smartPlaneTestUser.ConnectedDatas.First().IsConnected,Is.EqualTo(true));
@@ -108,7 +108,7 @@ namespace WebServer.Tests.Controllers
         public void Test_SetIsConnected_NoData_Empty_List()
         {
             //Act
-            var result = SystemUnderTest.SetIsConnected(new Dictionary<int, bool>());
+            var result = SystemUnderTest.SetIsConnected(new Dictionary<long, bool>());
 
             //Assert
             Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
@@ -122,6 +122,78 @@ namespace WebServer.Tests.Controllers
 
             //Assert
             Assert.That(() => result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
+
+        [Test]
+        public void Test_GetMotorDatas()
+        {
+            //Arrange
+            _smartPlaneTestUser.MotorDatas.Add(new MotorData {TimeStamp = 10,Value = 100});
+
+            //Act
+            var result = SystemUnderTest.GetMotorDatas();
+
+            //Assert
+            Assert.That(() => result.First().TimeStamp, Is.EqualTo(10));
+            Assert.That(() => result.First().Value, Is.EqualTo(100));
+        }
+
+        [Test]
+        public void Test_GetMotorDatas_without_data()
+        {
+            //Act
+            var result = SystemUnderTest.GetMotorDatas();
+
+            //Assert
+            Assert.That(() => result.Any(), Is.False);
+        }
+
+        [Test]
+        public void Test_GetRudderDatas()
+        {
+            //Arrange
+            _smartPlaneTestUser.RudderDatas.Add(new RudderData { TimeStamp = 10, Value = 100 });
+
+            //Act
+            var result = SystemUnderTest.GetRudderDatas();
+
+            //Assert
+            Assert.That(() => result.First().TimeStamp, Is.EqualTo(10));
+            Assert.That(() => result.First().Value, Is.EqualTo(100));
+        }
+
+        [Test]
+        public void Test_GetRudderDatas_without_data()
+        {
+            //Act
+            var result = SystemUnderTest.GetRudderDatas();
+
+            //Assert
+            Assert.That(() => result.Any(), Is.False);
+        }
+
+        [Test]
+        public void Test_GetConnectedDatas()
+        {
+            //Arrange
+            _smartPlaneTestUser.ConnectedDatas.Add(new ConnectedData { TimeStamp = 10, IsConnected = true });
+
+            //Act
+            var result = SystemUnderTest.GetConnectedDatas();
+
+            //Assert
+            Assert.That(() => result.First().TimeStamp, Is.EqualTo(10));
+            Assert.That(() => result.First().IsConnected, Is.True);
+        }
+
+        [Test]
+        public void Test_GetConnectedDatas_without_data()
+        {
+            //Act
+            var result = SystemUnderTest.GetConnectedDatas();
+
+            //Assert
+            Assert.That(() => result.Any(), Is.False);
         }
     }
 }

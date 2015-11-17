@@ -17,13 +17,18 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         protected override int CalculateProgress(SmartPlaneUser targetUser)
         {
             var flights = _getEndTimesAndStartTimesOfAllConnections(targetUser);
-            var flightTimes = _getFlightTimes(flights, targetUser);
+            var flightTimes = _getFlightTimes(flights, targetUser).ToList();
             if (flightTimes.Any() == false)
             {
                 return 0;
             }
-            var longestFlight = flightTimes.Max();            
-            return longestFlight / OnePercentStep;
+            var longestFlight = flightTimes.Max();
+            var percent = longestFlight/OnePercentStep;
+            if (percent >= 100)
+            {
+                return 100;
+            }
+            return (int) percent;
         }
 
         /// <summary>
@@ -31,7 +36,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         /// </summary>
         /// <param name="targetUser"></param>
         /// <returns></returns>
-        private IEnumerable<Tuple<int, int>> _getEndTimesAndStartTimesOfAllConnections(SmartPlaneUser targetUser)
+        private IEnumerable<Tuple<long, long>> _getEndTimesAndStartTimesOfAllConnections(SmartPlaneUser targetUser)
         {
             var startTimes = targetUser.ConnectedDatas.Where(c => c.IsConnected).Select(c => c.TimeStamp);
             var endTimes = targetUser.ConnectedDatas.Where(c => c.IsConnected == false).Select(c => c.TimeStamp).ToList();
@@ -42,7 +47,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
             foreach (var startTime in startTimes)
             {
                 var endTime = endTimes.Where(e => e >= startTime).Min();
-                yield return new Tuple<int, int>(startTime, endTime);
+                yield return new Tuple<long, long>(startTime, endTime);
             }
         }
 
@@ -52,7 +57,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         /// <param name="flights">The start and end times of possible flights</param>
         /// <param name="targetUser"></param>
         /// <returns></returns>
-        private IEnumerable<int> _getFlightTimes(IEnumerable<Tuple<int, int>> flights, SmartPlaneUser targetUser)
+        private IEnumerable<long> _getFlightTimes(IEnumerable<Tuple<long, long>> flights, SmartPlaneUser targetUser)
         {
             return flights.Select(flight => _calculateFlightTime(flight.Item1, flight.Item2, targetUser));
         }
@@ -64,7 +69,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         /// <param name="endTime"></param>
         /// <param name="targetUser"></param>
         /// <returns></returns>
-        private int _calculateFlightTime(int startTime, int endTime, SmartPlaneUser targetUser)
+        private long _calculateFlightTime(long startTime, long endTime, SmartPlaneUser targetUser)
         {
             var motorDatasInTimeRange = targetUser.MotorDatas.Where(m => m.TimeStamp <= endTime && m.TimeStamp >= startTime).ToList();
             if (motorDatasInTimeRange.Count < 2)
