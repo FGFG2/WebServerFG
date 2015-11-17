@@ -129,11 +129,11 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange 
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 300000, IsConnected = true });
-            user.MotorDatas.Add(new MotorData { TimeStamp = 300000, Value = 1 });
-            user.MotorDatas.Add(new MotorData { TimeStamp = 600000, Value = 0 });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 50*OnePercentStep, IsConnected = true });
+            user.MotorDatas.Add(new MotorData { TimeStamp = 50 * OnePercentStep, Value = 1 });
+            user.MotorDatas.Add(new MotorData { TimeStamp = 100 * OnePercentStep, Value = 0 });
             user.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 1 });
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 600000, IsConnected = false });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 100 * OnePercentStep, IsConnected = false });
 
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);
