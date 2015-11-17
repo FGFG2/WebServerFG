@@ -36,8 +36,8 @@ namespace WebServer.DataContext
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        IsConnected = c.Boolean(nullable: false),
                         TimeStamp = c.Long(nullable: false),
+                        Value = c.Boolean(nullable: false),
                         SmartPlaneUser_Id = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)
@@ -49,8 +49,8 @@ namespace WebServer.DataContext
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Value = c.Int(nullable: false),
                         TimeStamp = c.Long(nullable: false),
+                        Value = c.Int(nullable: false),
                         SmartPlaneUser_Id = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)
@@ -62,8 +62,8 @@ namespace WebServer.DataContext
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Value = c.Int(nullable: false),
                         TimeStamp = c.Long(nullable: false),
+                        Value = c.Int(nullable: false),
                         SmartPlaneUser_Id = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)
