@@ -2,32 +2,30 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="WebServer.Controllers.PlaneDataController">
     <Position X="4.5" Y="1" Width="1.75" />
-    <AssociationLine Name="_achievementDb" Type="WebServer.DataContext.IAchievementDb" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <Members>
+      <Method Name="PlaneDataController" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="_achievementDb" Type="WebServer.DataContext.IAchievementDb" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4.875" Y="2.81" />
-        <Point X="4.875" Y="3.727" />
-        <Point X="2.771" Y="3.727" Type="JumpStart" />
-        <Point X="2.604" Y="3.727" Type="JumpEnd" />
-        <Point X="2.125" Y="3.727" />
-        <Point X="2.125" Y="4.5" />
+        <Point X="4.5" Y="2.682" />
+        <Point X="4.125" Y="2.682" />
+        <Point X="4.125" Y="3.562" />
+        <Point X="3.75" Y="3.562" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-3.287" Y="1.201" />
+        <Position X="0.42" Y="0.359" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="_calculationManager" Type="WebServer.BusinessLogic.IAchievementCalculationManager" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="6.188" Y="2.81" />
-        <Point X="6.188" Y="3.343" />
-        <Point X="5.75" Y="3.343" />
-        <Point X="5.75" Y="4.5" />
-      </Path>
+    <AssociationLine Name="_calculationManager" Type="WebServer.BusinessLogic.IAchievementCalculationManager">
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="-1.454" Y="1.327" Height="0.182" Width="1.678" />
+        <Position X="-1.829" Y="0.244" Height="0.182" Width="1.678" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>IAABAAAAAAAAAAACAAAAAAAABAAAAAAAAAAAAAAABAA=</HashCode>
+      <HashCode>IAABAAAAAAAAAAACAAAAAAAAJAAAAAAAAAAAAAAABAA=</HashCode>
       <FileName>Controllers\PlaneDataController.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -36,40 +34,31 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="WebServer.Controllers.AchievementController">
-    <Position X="1" Y="1" Width="2" />
+    <Position X="2" Y="1" Width="2.25" />
+    <Members>
+      <Method Name="_getCurrentUser" Hidden="true" />
+      <Method Name="AchievementController" Hidden="true" />
+    </Members>
     <AssociationLine Name="_achievementDb" Type="WebServer.DataContext.IAchievementDb" FixedToPoint="true">
       <Path>
-        <Point X="1.812" Y="2.617" />
-        <Point X="1.812" Y="4.5" />
+        <Point X="2.438" Y="2.425" />
+        <Point X="2.438" Y="3.5" />
       </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.573" Y="1.552" />
-      </MemberNameLabel>
-    </AssociationLine>
-    <AssociationLine Name="_calculationManager" Type="WebServer.BusinessLogic.IAchievementCalculationManager" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="2.688" Y="2.617" />
-        <Point X="2.688" Y="4.125" />
-        <Point X="5.438" Y="4.125" />
-        <Point X="5.438" Y="4.5" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="1.889" Y="1.228" />
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-1.469" Y="0.458" Height="0.182" Width="1.316" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAIAAAAAAAACAAAAAIAAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <HashCode>AAAAAAIAAAAAAAACAAAAAIAAAAAAAAAAAAAAAAAIAAA=</HashCode>
       <FileName>Controllers\AchievementController.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="_achievementDb" />
-      <Field Name="_calculationManager" />
     </ShowAsAssociation>
   </Class>
   <Class Name="WebServer.BusinessLogic.AchievementCalculationManager">
-    <Position X="10.5" Y="1.5" Width="2.5" />
+    <Position X="8.5" Y="1" Width="2.5" />
     <Members>
-      <Method Name="_achievementCalculation" Hidden="true" />
       <Method Name="_calculateAchievementsForUser" Hidden="true" />
       <Method Name="_getUsersToUpdate" Hidden="true" />
       <Method Name="AchievementCalculationManager" Hidden="true" />
@@ -78,34 +67,34 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AgCAACAAAAAAAgACAAgAAAACAAAAAAAAAAAAQAAABAA=</HashCode>
+      <HashCode>AgCAACAAAAAAAAACAAAAAAACIAIAIAAgAAAAQAAABAg=</HashCode>
       <FileName>BusinessLogic\AchievementCalculationManager.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Interface Name="WebServer.BusinessLogic.IAchievementCalculationManager">
-    <Position X="4.25" Y="4.5" Width="2.5" />
+    <Position X="5" Y="3.5" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>BusinessLogic\IAchievementCalculationManager.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="WebServer.BusinessLogic.IAchievementCalculator">
-    <Position X="10.5" Y="4.75" Width="2.5" />
+    <Position X="8.5" Y="5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>BusinessLogic\IAchievementCalculator.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="WebServer.BusinessLogic.IAchievementCalculatorDetector">
-    <Position X="10.5" Y="3.25" Width="2.5" />
+    <Position X="8.5" Y="3.5" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>BusinessLogic\IAchievementCalculatorDetector.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="WebServer.DataContext.IAchievementDb">
-    <Position X="1" Y="4.5" Width="2" />
+    <Position X="1.75" Y="3.5" Width="2" />
     <TypeIdentifier>
       <HashCode>gAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DataContext\IAchievementDb.cs</FileName>
