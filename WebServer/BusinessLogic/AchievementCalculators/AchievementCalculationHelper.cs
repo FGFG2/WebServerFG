@@ -9,15 +9,17 @@ namespace WebServer.BusinessLogic.AchievementCalculators
     {
         public static IEnumerable<Tuple<long, long>> GetTimesWithMaxMotor(SmartPlaneUser targetUser)
         {
+            const int motorMax = 253; // Tolerance: 100% can be 253 or 255
+
             var motorDatasInRange = GetAllMotorDatasWithinConnections(targetUser);
-            var entriesWithMaxMotor = motorDatasInRange.Where(m => m.Value >= 255).Select(m => m).ToList();
+            var entriesWithMaxMotor = motorDatasInRange.Where(m => m.Value >= motorMax).Select(m => m).ToList();
 
             var startTimes = new List<long>();
             foreach (var entry in entriesWithMaxMotor)
             {
                 var prevValue = targetUser.MotorDatas.IndexOf(entry) - 1;
                 if (prevValue < 0) continue;
-                if (targetUser.MotorDatas[prevValue].Value < 255)
+                if (targetUser.MotorDatas[prevValue].Value < motorMax)
                 {
                     startTimes.Add(entry.TimeStamp);
                 }
@@ -28,7 +30,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
             {
                 var nextEntry = targetUser.MotorDatas.IndexOf(entry) + 1;
                 if (nextEntry >= targetUser.MotorDatas.Count()) continue;
-                if (targetUser.MotorDatas[nextEntry].Value < 255)
+                if (targetUser.MotorDatas[nextEntry].Value < motorMax)
                 {
                     endTimes.Add(entry.TimeStamp);
                 }
