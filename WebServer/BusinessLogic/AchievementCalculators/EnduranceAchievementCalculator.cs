@@ -35,7 +35,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
             return new Achievement
             {
                 Name = AchievementName,
-                Description = "Fliege 10 Minuten am Stück mit deinem Flugzeug!",
+                Description = "Fliege 1 Minute am Stück mit deinem Flugzeug!",
                 Progress = 0,
                 ImageUrl = ""
             };
