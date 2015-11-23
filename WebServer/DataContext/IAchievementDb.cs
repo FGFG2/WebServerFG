@@ -15,5 +15,7 @@ namespace WebServer.DataContext
         /// Save all changes to the Database
         /// </summary>
         void SaveChanges();
+
+        void ResetAllData();
     }
 }

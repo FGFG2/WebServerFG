@@ -30,7 +30,7 @@ namespace WebServer.Controllers
             _logger = logger;
         }
 
-        private bool _checkData<T>(Dictionary<long,T> map)
+        private bool _checkData<T>(Dictionary<long, T> map)
         {
             if (map == null || !map.Any())
             {
@@ -45,9 +45,9 @@ namespace WebServer.Controllers
             _calculationManager.UpdateForUser(targetUser.Id);
             return new HttpResponseMessage(HttpStatusCode.Created);
         }
-       
 
-        private HttpResponseMessage _addDataToUser<DataValueType, AchievementDataType>(SmartPlaneUser targetUser, IList<AchievementDataType> targetList, Dictionary<long, DataValueType> dataMap) 
+
+        private HttpResponseMessage _addDataToUser<DataValueType, AchievementDataType>(SmartPlaneUser targetUser, IList<AchievementDataType> targetList, Dictionary<long, DataValueType> dataMap)
             where AchievementDataType : AchievementData<DataValueType>, new()
         {
             if (!_checkData(dataMap))
@@ -70,7 +70,7 @@ namespace WebServer.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, exception.Message);
             }
-            
+
         }
 
         #region apiSetter
@@ -78,9 +78,9 @@ namespace WebServer.Controllers
         [Route("api/SetMotor")]
         public HttpResponseMessage SetMotor(Dictionary<long, int> motorMap)
         {
-            var currentUser = _getCurrentUser();               
+            var currentUser = _getCurrentUser();
             return _addDataToUser(currentUser, currentUser.MotorDatas, motorMap);
-         }
+        }
 
         // POST api/SetRuder
         [Route("api/SetRuder")]
@@ -88,7 +88,7 @@ namespace WebServer.Controllers
         {
 
             var currentUser = _getCurrentUser();
-            return _addDataToUser(currentUser, currentUser.RudderDatas, rudderMap);           
+            return _addDataToUser(currentUser, currentUser.RudderDatas, rudderMap);
         }
 
         // POST api/SetIsConnected
@@ -96,8 +96,26 @@ namespace WebServer.Controllers
         public HttpResponseMessage SetIsConnected(Dictionary<long, bool> connectionChanges)
         {
             var currentUser = _getCurrentUser();
-            return _addDataToUser(currentUser, currentUser.ConnectedDatas, connectionChanges);           
+            return _addDataToUser(currentUser, currentUser.ConnectedDatas, connectionChanges);
         }
+
+        // POST api/ResetAllData
+        [Route("api/ResetAllData")]
+        public HttpResponseMessage ResetAllData(Dictionary<long, string> password)
+        {
+            if (_checkData(password) == false)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.Forbidden, "No password");
+            }
+            if (password.First().Value.Equals("FgFg2") == false)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.Forbidden, "Wrong password");
+            }
+            _achievementDb.ResetAllData();
+            _calculationManager.UpdateForUser(0);
+            return Request.CreateResponse(HttpStatusCode.Accepted);
+        }
+
         #endregion
 
         #region apiGetter
@@ -123,7 +141,7 @@ namespace WebServer.Controllers
         {
             var currentUser = _getCurrentUser();
             return currentUser.RudderDatas.AsQueryable();
-        } 
+        }
         #endregion
 
 
