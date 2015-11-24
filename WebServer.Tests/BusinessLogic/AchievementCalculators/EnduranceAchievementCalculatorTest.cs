@@ -110,22 +110,6 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         }
 
         [Test]
-        public void Test_if_calculator_Ignores_flights_with_no_Motor_out_data()
-        {
-            //Arrange 
-            var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
-            user.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 1 });
-            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 50 * OnePercentStep, Value = false });
-
-            //Act
-            SystemUnderTest.CalculateAchievementProgress(user);
-
-            //Assert
-            Assert.That(() => user.Achievements.First().Progress, Is.EqualTo(0));
-        }
-
-        [Test]
         public void Test_if_calculator_Ignores_MotorDatas_which_are_out_of_the_connection()
         {
             //Arrange 

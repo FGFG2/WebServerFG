@@ -98,7 +98,9 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         public static long CalculateFlightDuration(long startTime, long endTime, SmartPlaneUser targetUser)
         {
             var motorDatasInTimeRange = targetUser.MotorDatas.Where(m => m.TimeStamp <= endTime && m.TimeStamp >= startTime).ToList();
-            if (motorDatasInTimeRange.Count < 2)
+
+            //When there are no MotorData in Range return 0
+            if (motorDatasInTimeRange.Any() == false)
             {
                 return 0;
             }
@@ -110,18 +112,15 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 // if no motor data is not 0, the plane was not flying
                 return 0;
             }
+            var startOfTheFlight = starts.Min(m => m.TimeStamp);
 
             // get all motor values which are 0
             var ends = motorDatasInTimeRange.Where(m => m.Value == 0).ToList();
-            if (ends.Any() == false)
-            {
-                // if no motor data is 0, the plane has not stoped flying
-                return 0;
-            }
 
-            var startOfTheFlight = starts.Min(m => m.TimeStamp);
-            var endOfTheFlight = ends.Min(m => m.TimeStamp);
+            // if no motor data is 0, use the time when the connection was closed
+            var endOfTheFlight = ends.Any() ? ends.Min(m => m.TimeStamp) : endTime;
 
+            //To be sure that no negative flight duration will be returned
             if (startOfTheFlight > endOfTheFlight)
             {
                 return 0;

@@ -203,6 +203,23 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             Assert.That(() => result, Is.EqualTo(duration));
         }
 
+        [Test]
+        public void Test_if_CalculateFlightDuration_uses_end_time_when_no_0_MotorData_can_be_fond()
+        {
+            //Arrange 
+            const int startTime = 0;
+            const int duration = 1000;
+            const int endTime = duration;
+
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime, Value = 1 });
+
+            //Act
+            var result = AchievementCalculationHelper.CalculateFlightDuration(startTime, endTime, SystemUnderTest);
+
+            //Assert
+            Assert.That(() => result, Is.EqualTo(duration));
+        }
+
         #endregion
 
         #region GetFlightDurationTimes
