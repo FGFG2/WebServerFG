@@ -14,18 +14,25 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             SystemUnderTest = new ConnectionAchievementCalculator();
         }
 
-        [Test]
-        public void Test_if_calculator_calculates_a_achievement_correct()
+        [TestCase(0,0)]
+        [TestCase(1,1)]
+        [TestCase(99,99)]
+        [TestCase(100,100)]
+        [TestCase(101,100)]
+        public void Test_if_calculator_calculates_a_achievement_correct(int connectionTimes,int progress)
         {
             //Arrange 
             var user = CreateSmartPlaneUser();
-            user.ConnectedDatas.Add(new ConnectedData { Value = true, TimeStamp = 0 });
+            for (var i = 0; i < connectionTimes; i++)
+            {
+                user.ConnectedDatas.Add(new ConnectedData { Value = true, TimeStamp = i }); 
+            }
 
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);
 
             //Assert
-            Assert.That(()=>user.Achievements.First().Progress,Is.EqualTo(100));
+            Assert.That(()=>user.Achievements.First().Progress,Is.EqualTo(progress));
         }
 
         [Test]

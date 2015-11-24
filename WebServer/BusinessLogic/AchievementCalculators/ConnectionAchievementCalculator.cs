@@ -6,6 +6,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
     public class ConnectionAchievementCalculator : AchievementCalculator
     {
         public const string AchievementName = "ConnectionMaster";
+        public const int OnePercentStep = 1;
 
         public ConnectionAchievementCalculator() : base(AchievementName)
         {
@@ -13,7 +14,9 @@ namespace WebServer.BusinessLogic.AchievementCalculators
 
         protected override int CalculateProgress(SmartPlaneUser targetUser)
         {
-            return targetUser.ConnectedDatas.Any(c=>c.Value) ? 100 : 0;
+            var connectionTimes = targetUser.ConnectedDatas.Count(c => c.Value);
+            var percent = connectionTimes / OnePercentStep;
+            return percent > 100 ? 100 : percent;
         }
 
         protected override Achievement CreateAchievement()
@@ -21,7 +24,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
             return new Achievement
             {
                 Name = AchievementName,
-                Description = "Verbinde dich mit deinem SmartPlane",
+                Description = "Verbinde dich 100 mal mit deinem SmartPlane",
                 Progress = 0,
                 ImageUrl = ""
             };
