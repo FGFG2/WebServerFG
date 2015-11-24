@@ -242,6 +242,7 @@
     <Compile Include="BusinessLogic\AchievementCalculationManager.cs" />
     <Compile Include="BusinessLogic\AchievementCalculators\EnduranceAchievementCalculator.cs" />
     <Compile Include="BusinessLogic\AchievementCalculators\FastFlightAchievementCalculator.cs" />
+    <Compile Include="BusinessLogic\AchievementCalculators\FlightDurationAchievementCaluculator.cs" />
     <Compile Include="BusinessLogic\IAchievementCalculationManager.cs" />
     <Compile Include="BusinessLogic\IAchievementCalculator.cs" />
     <Compile Include="BusinessLogic\IAchievementCalculatorDetector.cs" />

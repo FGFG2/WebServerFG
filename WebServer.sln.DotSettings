@@ -10,7 +10,7 @@ namespace $NAMESPACE$&#xD;
     {&#xD;
         public const string AchievementName = "$NAME$";&#xD;
 &#xD;
-        public EnduranceAchievementCalculator() : base(AchievementName)&#xD;
+        public $CLASS$() : base(AchievementName)&#xD;
         {&#xD;
         }&#xD;
 &#xD;
