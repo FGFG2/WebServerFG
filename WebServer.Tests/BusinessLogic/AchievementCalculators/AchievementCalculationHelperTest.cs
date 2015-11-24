@@ -82,6 +82,19 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             //Assert
             Assert.That(() => result.Any(), Is.False);
         }
+        [Test]
+        public void Test_if_GetEndAndStartTimesOfAllConnections_returns_no_values_with_endConnection_before_start_Connection()
+        {
+            //Arrange
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 1000, Value = false });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 1001, Value = true });
+
+            //Act
+            var result = AchievementCalculationHelper.GetEndAndStartTimesOfAllConnections(SystemUnderTest);
+
+            //Assert
+            Assert.That(() => result.Any(), Is.False);
+        }
 
         [Test]
         public void Test_if_GetEndAndStartTimesOfAllConnections_returns_correct_values_for_one_connection_with_two_start_connections()
@@ -120,6 +133,46 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             Assert.That(() => result.First().Item1, Is.EqualTo(startTime));
             Assert.That(() => result.First().Item2, Is.EqualTo(endTime));
         }
+
+        [Test]
+        public void Test_if_GetEndAndStartTimesOfAllConnections_returns_the_timestamp_of_the_last_MotorData_when_no_disconnect_is_available()
+        {
+            //Arrange
+            const int startTime = 1;
+            const int endTime = 10;
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = false });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, Value = true });
+            SystemUnderTest.MotorDatas.Add(new MotorData {TimeStamp = endTime,Value = 1});
+            SystemUnderTest.MotorDatas.Add(new MotorData {TimeStamp = endTime + 100,Value = 0});
+
+            //Act
+            var result = AchievementCalculationHelper.GetEndAndStartTimesOfAllConnections(SystemUnderTest);
+
+            //Assert
+            Assert.That(() => result.First().Item1, Is.EqualTo(startTime));
+            Assert.That(() => result.First().Item2, Is.EqualTo(endTime));
+        }
+
+
+        [Test]
+        public void Test_if_GetEndAndStartTimesOfAllConnections_ignores_old_start_Connections_with_no_end_Connection()
+        {
+            //Arrange
+            const int startTime = 100;
+            const int endTime = 110;
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true }); // wrong Connection. Should be ignored
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, Value = true });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = endTime, Value = 1 });
+
+            //Act
+            var result = AchievementCalculationHelper.GetEndAndStartTimesOfAllConnections(SystemUnderTest);
+
+            //Assert
+            Assert.That(() => result.Count(), Is.EqualTo(1));
+            Assert.That(() => result.First().Item1, Is.EqualTo(startTime));
+            Assert.That(() => result.First().Item2, Is.EqualTo(endTime));
+        }
+
         #endregion
 
         #region CalculateFlightDuration

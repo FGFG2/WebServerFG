@@ -61,17 +61,31 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         /// <returns></returns>
         public static IEnumerable<Tuple<long, long>> GetEndAndStartTimesOfAllConnections(SmartPlaneUser targetUser)
         {
-            var startTimes = targetUser.ConnectedDatas.Where(c => c.Value).Select(c => c.TimeStamp);
+            var startTimes = targetUser.ConnectedDatas.Where(c => c.Value).Select(c => c.TimeStamp).ToList();
             var endTimes = targetUser.ConnectedDatas.Where(c => c.Value == false).Select(c => c.TimeStamp).ToList();
             foreach (var startTime in startTimes)
             {
-                if (endTimes.Count == 0)
+                var endTimesAfterStartTime = endTimes.Where(e => e >= startTime).ToList();
+
+                if (endTimesAfterStartTime.Any())
                 {
-                    yield break;
+                    var endTime = endTimesAfterStartTime.Min();
+                    endTimes.Remove(endTime);
+                    yield return new Tuple<long, long>(startTime, endTime);
                 }
-                var endTime = endTimes.Where(e => e >= startTime).Min();
-                endTimes.Remove(endTime);
-                yield return new Tuple<long, long>(startTime, endTime);
+                //If there is no en connection for the startconnection and the start connection is the last start connection, the use the last 
+                //Motor data time stamp as endtime because the plane is actually flying
+                if (startTimes.Any(x => x > startTime))
+                {
+                    continue;
+                }
+                var motorDatas = targetUser.MotorDatas.Where(x => x.Value != 0).Where(x => x.TimeStamp > startTime).ToList();
+                if (motorDatas.Any() == false)
+                {
+                    continue;
+                }
+                var lastMotorData = motorDatas.Max(x => x.TimeStamp);
+                yield return new Tuple<long, long>(startTime, lastMotorData);
             }
         }
 
