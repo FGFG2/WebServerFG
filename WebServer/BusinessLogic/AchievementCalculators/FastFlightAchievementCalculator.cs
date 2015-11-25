@@ -9,7 +9,9 @@ namespace WebServer.BusinessLogic.AchievementCalculators
     public class FastFlightAchievementCalculator : AchievementCalculator
     {
 
-        public const string AchievementName = "Geschwindigkeit"; 
+        public const string AchievementName = "Geschwindigkeit";
+        public const float OnePercentStep = 0.1f;
+        public const int NeededDurationWithMaxMotor = 5000;
 
         public FastFlightAchievementCalculator() : base(AchievementName)
         {
@@ -17,21 +19,15 @@ namespace WebServer.BusinessLogic.AchievementCalculators
 
         protected override int CalculateProgress(SmartPlaneUser targetUser)
         {
-            var timesWithMaxMotor = AchievementCalculationHelper.GetTimesWithMaxMotor(targetUser);
-            foreach (var time in timesWithMaxMotor)
+            var timesWithMaxMotor = AchievementCalculationHelper.GetDurationsWithMaxMotor(targetUser).ToList();
+            var maxMotorTimeDuration = timesWithMaxMotor.Where(d => d >= NeededDurationWithMaxMotor);
+            var progress = maxMotorTimeDuration.Count() / OnePercentStep;
+            if (progress > 100)
             {
-                if ((time.Item2 - time.Item1) < 5000)
-                {
-                    timesWithMaxMotor = timesWithMaxMotor.Where(t => !t.Equals(time)).ToList();
-                }
-            }            
-            double progress = timesWithMaxMotor.Count()/10.0;
-            if (progress > 1.0)
-            {
-                progress = (float) 1.0;
+                return 100;
             }
-            return (int) (progress*100);
-        }               
+            return (int)progress;
+        }
 
         protected override Achievement CreateAchievement()
         {

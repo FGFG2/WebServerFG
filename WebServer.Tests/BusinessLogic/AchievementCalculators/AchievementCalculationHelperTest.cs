@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using WebServer.BusinessLogic.AchievementCalculators;
@@ -142,8 +143,8 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             const int endTime = 10;
             SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = false });
             SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, Value = true });
-            SystemUnderTest.MotorDatas.Add(new MotorData {TimeStamp = endTime,Value = 1});
-            SystemUnderTest.MotorDatas.Add(new MotorData {TimeStamp = endTime + 100,Value = 0});
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = endTime, Value = 1 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = endTime + 100, Value = 0 });
 
             //Act
             var result = AchievementCalculationHelper.GetEndAndStartTimesOfAllConnections(SystemUnderTest);
@@ -152,7 +153,6 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             Assert.That(() => result.First().Item1, Is.EqualTo(startTime));
             Assert.That(() => result.First().Item2, Is.EqualTo(endTime));
         }
-
 
         [Test]
         public void Test_if_GetEndAndStartTimesOfAllConnections_ignores_old_start_Connections_with_no_end_Connection()
@@ -166,6 +166,25 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
 
             //Act
             var result = AchievementCalculationHelper.GetEndAndStartTimesOfAllConnections(SystemUnderTest);
+
+            //Assert
+            Assert.That(() => result.Count(), Is.EqualTo(1));
+            Assert.That(() => result.First().Item1, Is.EqualTo(startTime));
+            Assert.That(() => result.First().Item2, Is.EqualTo(endTime));
+        }
+
+        [Test]
+        public void Test_if_GetEndAndStartTimesOfAllConnections_ignores_uses_end_Connection_if_existing()
+        {
+            //Arrange
+            const int startTime = 0;
+            const int endTime = 100;
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, Value = true });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime + 1, Value = 1 });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, Value = false });
+
+            //Act
+            var result = AchievementCalculationHelper.GetEndAndStartTimesOfAllConnections(SystemUnderTest).ToList();
 
             //Assert
             Assert.That(() => result.Count(), Is.EqualTo(1));
@@ -217,7 +236,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             //Assert
             Assert.That(() => result, Is.EqualTo(duration));
         }
-        
+
         [Test]
         public void Test_if_CalculateFlightDuration_with_only_motor_out_values()
         {
@@ -245,9 +264,9 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             const int duration = 1000;
 
             SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime, Value = 1 });
-            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime -1, Value = 1 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime - 1, Value = 1 });
             SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime + duration, Value = 0 });
-            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = endTime + 1 , Value = 0 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = endTime + 1, Value = 0 });
 
             //Act
             var result = AchievementCalculationHelper.CalculateFlightDuration(startTime, endTime, SystemUnderTest);
@@ -306,11 +325,215 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         public void Test_if_returns_nothing_when_null_is_passed()
         {
             //Act
-            var result = AchievementCalculationHelper.GetFlightDurationTimes(new Tuple<long,long>[] {}, SystemUnderTest);
+            var result = AchievementCalculationHelper.GetFlightDurationTimes(new Tuple<long, long>[] { }, SystemUnderTest);
 
             //Assert
             Assert.That(() => result.Any(), Is.False);
         }
+        #endregion
+
+        #region GetAllMotorDatasWithinConnections
+
+        [Test]
+        public void Test_if_GetAllMotorDatasWithinConnections_retrns_only_MotorData_within_the_connection()
+        {
+            //Arrange 
+            const int startTime = 0;
+            const int endTime = 100000;
+            var flightTime = new[] { new Tuple<long, long>(startTime, endTime) };
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime, Value = 1 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime + 1, Value = 0 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime + 2, Value = 1 });
+
+            //Act
+            var allMotorDatasWithinConnections = AchievementCalculationHelper.GetAllMotorDatasWithinConnections(flightTime, SystemUnderTest).ToList();
+
+            //Assert
+            Assert.That(() => allMotorDatasWithinConnections.Count, Is.EqualTo(1));
+            Assert.That(() => allMotorDatasWithinConnections.First(), Is.EquivalentTo(SystemUnderTest.MotorDatas));
+        }
+
+        [Test]
+        public void Test_if_GetAllMotorDatasWithinConnections_ignores_MotorData_out_of_the_connection()
+        {
+            //Arrange 
+            const int startTime = 1000;
+            const int endTime = 100000;
+            var flightTime = new[] { new Tuple<long, long>(startTime, endTime) };
+
+            var expected = new[]
+            {
+                new MotorData {TimeStamp = startTime, Value = 1},
+                new MotorData {TimeStamp = startTime+1, Value = 0},
+                new MotorData {TimeStamp = startTime+2, Value = 1}
+            };
+
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime - 1, Value = 1 });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, Value = true });
+            SystemUnderTest.MotorDatas.Add(expected[0]);
+            SystemUnderTest.MotorDatas.Add(expected[1]);
+            SystemUnderTest.MotorDatas.Add(expected[2]);
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, Value = false });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = endTime + 1, Value = 1 });
+
+            //Act
+            var allMotorDatasWithinConnections = AchievementCalculationHelper.GetAllMotorDatasWithinConnections(flightTime, SystemUnderTest).ToList();
+
+            //Assert
+            Assert.That(() => allMotorDatasWithinConnections.Count, Is.EqualTo(1));
+            Assert.That(() => allMotorDatasWithinConnections.First(), Is.EquivalentTo(expected));
+        }
+
+        #endregion
+
+        #region GetDurationsWithMaxMotor
+
+        [Test]
+        public void Test_GetDurationsWithMaxMotor_returns_the_correct_duration_whith_one_max_motor_time()
+        {
+            //Arrange 
+            const long duration = 100;
+
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 255 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = duration, Value = 0 });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = duration, Value = false });
+
+
+            //Act
+            var result = AchievementCalculationHelper.GetDurationsWithMaxMotor(SystemUnderTest).ToList();
+
+            //Assert
+            Assert.That(() => result.Count, Is.EqualTo(1));
+            Assert.That(() => result.First(), Is.EqualTo(duration));
+        }
+
+        [Test]
+        public void Test_GetDurationsWithMaxMotor_returns_the_correct_duration_whith_two_max_motor_durations_and_lower_values_between()
+        {
+            //Arrange 
+            const long duration1 = 100;
+            const long start2 = 1000;
+            const long duration2 = 200;
+            const long endTime = 100000;
+
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 255 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = duration1, Value = 0 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = start2, Value = 255 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = start2 + duration2, Value = 0 });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, Value = false });
+
+
+            //Act
+            var result = AchievementCalculationHelper.GetDurationsWithMaxMotor(SystemUnderTest).ToList();
+
+            //Assert
+            Assert.That(() => result.Count, Is.EqualTo(2));
+            Assert.That(() => result.First(), Is.EqualTo(duration1));
+            Assert.That(() => result.Last(), Is.EqualTo(duration2));
+        }
+
+        [Test]
+        public void Test_GetDurationsWithMaxMotor_returns_the_correct_duration_whith_two_max_motor_durations_in_two_connections()
+        {
+            //Arrange 
+            const long duration1 = 100;
+            const long start2 = 1000;
+            const long duration2 = 200;
+            const long endTime = 100000;
+
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 255 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = duration1, Value = 0 });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = duration1, Value = false });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = start2, Value = true });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = start2, Value = 255 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = start2 + duration2, Value = 0 });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, Value = false });
+
+
+            //Act
+            var result = AchievementCalculationHelper.GetDurationsWithMaxMotor(SystemUnderTest).ToList();
+
+            //Assert
+            Assert.That(() => result.Count, Is.EqualTo(2));
+            Assert.That(() => result.First(), Is.EqualTo(duration1));
+            Assert.That(() => result.Last(), Is.EqualTo(duration2));
+        }
+
+        [Test]
+        public void Test_GetDurationsWithMaxMotor_returns_the_correct_duration_whith_many_max_motor_values()
+        {
+            //Arrange 
+            const long duration1 = 100;
+            const long endTime = 100000;
+
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 255 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = 2, Value = 255 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = 4, Value = 255 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = 10, Value = 255 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = 20, Value = 255 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = duration1, Value = 0 });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, Value = false });
+
+            //Act
+            var result = AchievementCalculationHelper.GetDurationsWithMaxMotor(SystemUnderTest).ToList();
+
+            //Assert
+            Assert.That(() => result.Count, Is.EqualTo(1));
+            Assert.That(() => result.First(), Is.EqualTo(duration1));
+        }
+
+        [Test]
+        public void Test_GetDurationsWithMaxMotor_returns_the_correct_duration_whith_two_max_motor_values()
+        {
+            //Arrange 
+            const long duration1 = 100;
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 255 });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = duration1, Value = 255 });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = duration1, Value = false });
+
+            //Act
+            var result = AchievementCalculationHelper.GetDurationsWithMaxMotor(SystemUnderTest).ToList();
+
+            //Assert
+            Assert.That(() => result.Count, Is.EqualTo(1));
+            Assert.That(() => result.First(), Is.EqualTo(duration1));
+        }
+
+        [Test]
+        public void Test_GetDurationsWithMaxMotor_returns_the_correct_duration_whith_one_max_motor_value_and_one_disconnect()
+        {
+            //Arrange 
+            const long duration1 = 100;
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 255 });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = duration1, Value = false });
+
+            //Act
+            var result = AchievementCalculationHelper.GetDurationsWithMaxMotor(SystemUnderTest).ToList();
+
+            //Assert
+            Assert.That(() => result.Any(), Is.False);
+        }
+
+        [Test]
+        public void Test_GetDurationsWithMaxMotor_returns_the_correct_duration_whith_one_max_motor_value_and_no_disconnect()
+        {
+            //Arrange 
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
+            SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = 0, Value = 255 });
+
+            //Act
+            var result = AchievementCalculationHelper.GetDurationsWithMaxMotor(SystemUnderTest).ToList();
+
+            //Assert
+            Assert.That(() => result.Any(), Is.False);
+        }
+
         #endregion
     }
 }

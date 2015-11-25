@@ -1,57 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using WebGrease.Css.Extensions;
 using WebServer.Models;
 
 namespace WebServer.BusinessLogic.AchievementCalculators
 {
     public static class AchievementCalculationHelper
     {
-        public static IEnumerable<Tuple<long, long>> GetTimesWithMaxMotor(SmartPlaneUser targetUser)
+        /// <summary>
+        /// Returns the length of the times a plane was flying with maxminum motor value
+        /// </summary>
+        /// <param name="targetUser"></param>
+        /// <returns></returns>
+        public static IEnumerable<long> GetDurationsWithMaxMotor(SmartPlaneUser targetUser)
         {
             const int motorMax = 253; // Tolerance: 100% can be 253 or 255
-
-            var motorDatasInRange = GetAllMotorDatasWithinConnections(targetUser);
-            var entriesWithMaxMotor = motorDatasInRange.Where(m => m.Value >= motorMax).Select(m => m).ToList();
-
-            var startTimes = new List<long>();
-            foreach (var entry in entriesWithMaxMotor)
+            var allConnections = GetEndAndStartTimesOfAllConnections(targetUser);
+            var motorDatasInRange = GetAllMotorDatasWithinConnections(allConnections, targetUser);
+            foreach (var motorDatas in motorDatasInRange)
             {
-                var prevValue = targetUser.MotorDatas.IndexOf(entry) - 1;
-                if (prevValue < 0) continue;
-                if (targetUser.MotorDatas[prevValue].Value < motorMax)
+                long? startTime = null;
+                long endTime = 0;
+                long? duration;
+                foreach (var motorData in motorDatas)
                 {
-                    startTimes.Add(entry.TimeStamp);
+                    endTime = motorData.TimeStamp;
+                    if (motorData.Value < motorMax)
+                    {
+                        duration = endTime - startTime;
+                        if (duration > 0)
+                        {
+                            yield return (long)duration;
+                        }
+                        startTime = null;
+                        endTime = 0;
+                    }
+                    else
+                    {
+                        if (startTime == null)
+                        {
+                            startTime = motorData.TimeStamp;
+                        }
+                    }
                 }
-            }
-
-            var endTimes = new List<long>();
-            foreach (var entry in entriesWithMaxMotor)
-            {
-                var nextEntry = targetUser.MotorDatas.IndexOf(entry) + 1;
-                if (nextEntry >= targetUser.MotorDatas.Count()) continue;
-                if (targetUser.MotorDatas[nextEntry].Value < motorMax)
+                duration = endTime - startTime;
+                if (duration > 0)
                 {
-                    endTimes.Add(entry.TimeStamp);
+                    yield return (long) duration;
                 }
-            }
-
-            var startAndEndTimes = startTimes.Zip(endTimes, (s, e) => new { startTime = s, endTime = e });
-            foreach (var time in startAndEndTimes)
-            {
-                yield return new Tuple<long, long>(time.startTime, time.endTime);
             }
         }
 
-        public static List<MotorData> GetAllMotorDatasWithinConnections(SmartPlaneUser targetUser)
+        /// <summary>
+        /// Returns all MotorData for each passed flight
+        /// </summary>
+        /// <param name="flights"></param>
+        /// <param name="targetUser"></param>
+        /// <returns></returns>
+        public static IEnumerable<IEnumerable<MotorData>> GetAllMotorDatasWithinConnections(IEnumerable<Tuple<long, long>> flights, SmartPlaneUser targetUser)
         {
-            var connectionTimes = GetEndAndStartTimesOfAllConnections(targetUser);
-            var motorDatasInRange = new List<MotorData>();
-            foreach (var connectionTime in connectionTimes)
-            {
-                motorDatasInRange.AddRange(targetUser.MotorDatas.Where(m => m.TimeStamp >= connectionTime.Item1 && m.TimeStamp <= connectionTime.Item2));
-            }
-            return motorDatasInRange;
+            return flights.Select(flight => targetUser.MotorDatas.Where(x => x.TimeStamp >= flight.Item1 && x.TimeStamp <= flight.Item2));
         }
 
         /// <summary>
@@ -72,6 +81,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                     var endTime = endTimesAfterStartTime.Min();
                     endTimes.Remove(endTime);
                     yield return new Tuple<long, long>(startTime, endTime);
+                    continue;
                 }
                 //If there is no en connection for the startconnection and the start connection is the last start connection, the use the last 
                 //Motor data time stamp as endtime because the plane is actually flying
