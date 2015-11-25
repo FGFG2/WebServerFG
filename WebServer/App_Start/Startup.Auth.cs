@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.Google;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
 using WebServer.Providers;
@@ -33,45 +28,19 @@ namespace WebServer
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             // Configure the application for OAuth based flow
-            //PublicClientId = "self";
-            //OAuthOptions = new OAuthAuthorizationServerOptions
-            //{
-            //    TokenEndpointPath = new PathString("/Token"),
-            //Provider = new ApplicationOAuthProvider(PublicClientId),
-            //    AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
-            //    AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
-            //    // In production mode set AllowInsecureHttp = false
-            //    AllowInsecureHttp = true
-            //};
-            app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
-            app.UseOAuthAuthorizationServer(new OAuthAuthorizationServerOptions()
+            PublicClientId = "self";
+            OAuthOptions = new OAuthAuthorizationServerOptions
             {
-                AllowInsecureHttp = true,
-                TokenEndpointPath = new PathString("/token"),
-                Provider = new OAuthAuthorizationServerProvider()
-                {
-                    OnValidateClientAuthentication = async c =>
-                    {
-                        c.Validated();
-                    },
-
-                    OnGrantResourceOwnerCredentials = async c =>
-                    {
-                        if ((c.UserName.Equals("test@test.rocks") && c.Password.Equals("test123")))
-                        {
-                            ClaimsIdentity id = new ClaimsIdentity(new Claim[]
-                            {
-                                new Claim(ClaimTypes.Name, c.UserName)
-                            },
-                                OAuthDefaults.AuthenticationType);
-                            c.Validated(id);
-                        }
-                    }
-                }
-            });
+                TokenEndpointPath = new PathString("/Token"),
+                Provider = new ApplicationOAuthProvider(PublicClientId),
+                AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
+                AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
+                // TODO: In production mode set AllowInsecureHttp = false
+                AllowInsecureHttp = true
+            };
 
             // Enable the application to use bearer tokens to authenticate users
-            //app.UseOAuthBearerTokens(OAuthOptions);
+            app.UseOAuthBearerTokens(OAuthOptions);
         }
     }
 }
