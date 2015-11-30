@@ -150,5 +150,15 @@ namespace WebServer.Controllers
             var currentUser = _achievementDb.GetSmartPlaneUserById(0);
             return currentUser;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing)
+            {
+                return;
+            }
+            _calculationManager.Dispose();
+            _achievementDb.Dispose();
+        }
     }
 }

@@ -1,8 +1,9 @@
-﻿using WebServer.Models;
+﻿using System;
+using WebServer.Models;
 
 namespace WebServer.DataContext
 {
-    public interface IAchievementDb
+    public interface IAchievementDb : IDisposable
     {
         /// <summary>
         /// Get a SmartPlaneUser by íts userId

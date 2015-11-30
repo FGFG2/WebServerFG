@@ -1,8 +1,10 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Universial.Core.Utilities;
 using WebServer.DataContext;
 using WebServer.Logging;
 using WebServer.Models;
@@ -25,6 +27,7 @@ namespace WebServer.BusinessLogic
         private readonly CancellationTokenSource _achievementCalculationCancelSource;
         private readonly IAchievementDb _achievementDb;
         private readonly ILoggerFacade _logger;
+        private readonly Task _achievementCalculationTask;
 
         #endregion;
 
@@ -43,8 +46,8 @@ namespace WebServer.BusinessLogic
             _achievementCalculators = _getAvailableAchievementCalculators(achievementDetector);
 
             _achievementCalculationCancelSource = new CancellationTokenSource();
-            var achievementCalculationTask = new Task(_achievementCalculationTaskAction, _achievementCalculationCancelSource.Token, TaskCreationOptions.LongRunning);
-            achievementCalculationTask.Start();
+            _achievementCalculationTask = new Task(_achievementCalculationTaskAction, _achievementCalculationCancelSource.Token, TaskCreationOptions.LongRunning);
+            _achievementCalculationTask.Start();
         }
 
         private IList<IAchievementCalculator> _getAvailableAchievementCalculators(IAchievementCalculatorDetector achievementDetector)
@@ -123,5 +126,30 @@ namespace WebServer.BusinessLogic
                 _userWithChangedData.AddOrUpdate(_achievementDb.GetSmartPlaneUserById(userId), 0, (key, oldValue) => 0);
             }
         }
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~AchievementCalculationManager()
+        {
+            Dispose(false);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                TaskHelper.TryToStopTask(_achievementCalculationTask,_achievementCalculationCancelSource);
+                _achievementCalculationCancelSource.Dispose();
+                _achievementCalculationTask.Dispose();
+                _logger.Log("Disposed", LogLevel.Info);
+            }
+        }
+        #endregion
     }
 }
