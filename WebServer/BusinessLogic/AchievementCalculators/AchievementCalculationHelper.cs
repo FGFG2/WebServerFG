@@ -8,6 +8,42 @@ namespace WebServer.BusinessLogic.AchievementCalculators
 {
     public static class AchievementCalculationHelper
     {
+        public static IEnumerable<long> GetDurationOfFlightsWithSmoothRudder(SmartPlaneUser targetUser)
+        {
+            var allConnections = GetEndAndStartTimesOfAllConnections(targetUser);
+            var motorDatasInRange = GetAllMotorDatasWithinConnections(allConnections, targetUser);
+            long startTime = motorDatasInRange.First().First().TimeStamp;
+            long endTime = motorDatasInRange.First().First().TimeStamp;
+            var lastValue = motorDatasInRange.First().First().Value;
+            long duration = 0;
+            foreach (var connection in motorDatasInRange)
+            {                
+                foreach (var motorData in connection)
+                {
+                    if (motorData.Value - lastValue > 30 || motorData.Value - lastValue < -30)
+                    {                        
+                        duration = endTime - startTime;
+                        startTime = motorData.TimeStamp;
+                        endTime = motorData.TimeStamp;
+                        if (duration > 0)
+                        {
+                            yield return (long) duration;
+                        }
+                    }
+                    else
+                    {
+                        endTime = motorData.TimeStamp;
+                    }
+                    lastValue = motorData.Value;
+                }
+                duration = endTime - startTime;
+                if (duration > 0)
+                {
+                    yield return (long) duration;
+                }
+            }
+        } 
+
         /// <summary>
         /// Returns the length of the times a plane was flying with maxminum motor value
         /// </summary>
@@ -61,6 +97,17 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         public static IEnumerable<IEnumerable<MotorData>> GetAllMotorDatasWithinConnections(IEnumerable<Tuple<long, long>> flights, SmartPlaneUser targetUser)
         {
             return flights.Select(flight => targetUser.MotorDatas.Where(x => x.TimeStamp >= flight.Item1 && x.TimeStamp <= flight.Item2));
+        }
+
+        /// <summary>
+        /// Returns all RudderData for each passed flight
+        /// </summary>
+        /// <param name="flights"></param>
+        /// <param name="targetUser"></param>
+        /// <returns></returns>
+        public static IEnumerable<IEnumerable<RudderData>> GetAllRudderDatasWithinConnections(IEnumerable<Tuple<long, long>> flights, SmartPlaneUser targetUser)
+        {
+            return flights.Select(flight => targetUser.RudderDatas.Where(x => x.TimeStamp >= flight.Item1 && x.TimeStamp <= flight.Item2));
         }
 
         /// <summary>
