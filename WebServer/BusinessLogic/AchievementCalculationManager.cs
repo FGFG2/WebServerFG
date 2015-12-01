@@ -19,15 +19,10 @@ namespace WebServer.BusinessLogic
         #region Fields
 
         private readonly IList<IAchievementCalculator> _achievementCalculators;
-        // used as ConcurrentSet with the keys as values. The values of the dictionary are not used.
-        // The ConcurrentDictionary is used, because there is no default implementation of a concurrent set and the
-        // dictionary serves well enough as a set (there is overhead by the values, but the self implementation would not be worth
-        // the trouble. One million users would only lead to a memory overhead of 1 MB.
-        private readonly ConcurrentDictionary<SmartPlaneUser, byte> _userWithChangedData;
-        private readonly CancellationTokenSource _achievementCalculationCancelSource;
         private readonly IAchievementDb _achievementDb;
         private readonly ILoggerFacade _logger;
-        private readonly Task _achievementCalculationTask;
+        private int _userIdToUpdate;
+        private Task _updateTask;
 
         #endregion;
 
@@ -41,13 +36,9 @@ namespace WebServer.BusinessLogic
         {
             _achievementDb = achievementDb;
             _logger = logger;
-            _userWithChangedData = new ConcurrentDictionary<SmartPlaneUser, byte>();
-
             _achievementCalculators = _getAvailableAchievementCalculators(achievementDetector);
-
-            _achievementCalculationCancelSource = new CancellationTokenSource();
-            _achievementCalculationTask = new Task(_achievementCalculationTaskAction, _achievementCalculationCancelSource.Token, TaskCreationOptions.LongRunning);
-         }
+            _updateTask = new Task(_updateAchievements);
+        }
 
         private IList<IAchievementCalculator> _getAvailableAchievementCalculators(IAchievementCalculatorDetector achievementDetector)
         {
@@ -58,38 +49,12 @@ namespace WebServer.BusinessLogic
 
             return availableCalculators;
         }
-
-        #region Achievement calculation task
-        private void _achievementCalculationTaskAction()
-        {
-            _updateAchievements();
-        }
-
+        
         private void _updateAchievements()
         {
-            var usersToUpdate = _getUsersToUpdate();
-            foreach (var user in usersToUpdate)
-            {
-                _calculateAchievementsForUser(user);
-            }
+            var user = _achievementDb.GetSmartPlaneUserById(_userIdToUpdate);
+            _calculateAchievementsForUser(user);
             _achievementDb.SaveChanges();
-
-            var addedUserMessage = $"Updated the achievements of {usersToUpdate.Count} users.";
-            _logger.Log(addedUserMessage, LogLevel.Info);
-        }
-
-        private IList<SmartPlaneUser> _getUsersToUpdate()
-        {
-            //dump keys of concurrent dictionary to use them outside synchronized blocks. 
-            //Clear the dictionary, so that already updated user are not going to be updated again when not needed.
-            IList<SmartPlaneUser> users;
-            lock (_userWithChangedData)
-            {
-                users = _userWithChangedData.Keys.ToList();
-                _userWithChangedData.Clear();
-            }
-
-            return users;
         }
 
         private void _calculateAchievementsForUser(SmartPlaneUser user)
@@ -99,8 +64,6 @@ namespace WebServer.BusinessLogic
                 achievementCalculator.CalculateAchievementProgress(user);
             }
         }
-        #endregion
-
 
         public void UpdateForUser(int userId)
         {
@@ -112,11 +75,8 @@ namespace WebServer.BusinessLogic
 
         private void _addUserToAchievementUpdateQueue(int userId)
         {
-            lock (_userWithChangedData)
-            {
-                _userWithChangedData.AddOrUpdate(_achievementDb.GetSmartPlaneUserById(userId), 0, (key, oldValue) => 0);
-                _achievementCalculationTask.Start();
-            }
+            _userIdToUpdate = userId;
+            _updateTask.Start();
         }
 
         #region IDisposable
@@ -136,9 +96,11 @@ namespace WebServer.BusinessLogic
         {
             if (disposing)
             {
-                TaskHelper.TryToStopTask(_achievementCalculationTask, _achievementCalculationCancelSource);
-                _achievementCalculationCancelSource.Dispose();
-                _achievementCalculationTask.Dispose();
+                while (_updateTask.Status == TaskStatus.Running)
+                {
+                    Thread.Sleep(100);
+                }
+                _achievementDb.Dispose();
             }
         }
         #endregion

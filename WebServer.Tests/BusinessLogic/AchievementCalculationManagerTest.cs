@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using NSubstitute;
 using NUnit.Framework;
 using Universial.Test;
@@ -31,6 +32,12 @@ namespace WebServer.Tests.BusinessLogic
             SystemUnderTest = new AchievementCalculationManager(detector, achievementDbMock, Substitute.For<ILoggerFacade>());
         }
 
+        protected override void TearDown()
+        {
+            base.TearDown();
+            SystemUnderTest.Dispose();
+        }
+
         [Test]
         public void Test_if_calls_calculators_for_added_users()
         {
@@ -52,16 +59,6 @@ namespace WebServer.Tests.BusinessLogic
             {
                 Assert.That(()=> achievementCalculator.Received(1).CalculateAchievementProgress(_dummySmartPlaneUser), Throws.Nothing.After(2000,30));
             }
-        }
-
-        [Test]
-        public void Test_if_only_calls_calculators_for_added_users()
-        {
-            //Act
-            SystemUnderTest.UpdateForUser(new SmartPlaneUser().Id);
-
-            //Assert
-            Assert.That(() => _calculators.First().Received(0).CalculateAchievementProgress(_dummySmartPlaneUser), Throws.Nothing.After(2000, 30));
         }
     }
 }
