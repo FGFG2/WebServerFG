@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using NLog;
 using WebGrease.Css.Extensions;
 using WebServer.Models;
 
@@ -17,6 +19,11 @@ namespace WebServer.DataContext
         public SmartPlaneUser GetSmartPlaneUserById(int userId)
         {
             return _db.SmartPlaneUsers.FirstOrDefault(/*u => u.Id == userId*/);
+        }
+
+        public IEnumerable<LogEntry> GetAllLogEntries()
+        {
+            return _db.LogEntries;
         }
 
         public void SaveChanges()

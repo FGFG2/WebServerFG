@@ -142,6 +142,13 @@ namespace WebServer.Controllers
             var currentUser = _getCurrentUser();
             return currentUser.RudderDatas.AsQueryable();
         }
+        
+        // GET: api/Logs
+        [Route("api/Logs")]
+        public IQueryable<LogEntry> GetLogs()
+        {
+            return _achievementDb.GetAllLogEntries().AsQueryable(); 
+        }
         #endregion
 
 

@@ -8,6 +8,16 @@ namespace WebServer.DataContext
         public override void Up()
         {
             CreateTable(
+                "dbo.LogEntries",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        TimeStamp = c.DateTime(nullable: false),
+                        Message = c.String(),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
                 "dbo.SmartPlaneUsers",
                 c => new
                     {
@@ -87,6 +97,7 @@ namespace WebServer.DataContext
             DropTable("dbo.ConnectedDatas");
             DropTable("dbo.Achievements");
             DropTable("dbo.SmartPlaneUsers");
+            DropTable("dbo.LogEntries");
         }
     }
 }

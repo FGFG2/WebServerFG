@@ -268,6 +268,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Logging\DatabaseLogger.cs" />
     <Compile Include="Logging\ILoggerFacade.cs" />
     <Compile Include="Logging\LoggerNLog.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -277,6 +278,7 @@
     <Compile Include="Models\ConnectedData.cs" />
     <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\LogEntry.cs" />
     <Compile Include="Models\MotorData.cs" />
     <Compile Include="Models\RudderData.cs" />
     <Compile Include="Models\SmartPlaneUser.cs" />
