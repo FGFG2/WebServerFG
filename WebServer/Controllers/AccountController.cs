@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
+using Microsoft.Practices.Unity;
 using WebServer.Models;
 using WebServer.Providers;
 using WebServer.Results;
@@ -25,7 +26,7 @@ namespace WebServer.Controllers
     {
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
-
+        [InjectionConstructor]
         public AccountController()
         {
         }
