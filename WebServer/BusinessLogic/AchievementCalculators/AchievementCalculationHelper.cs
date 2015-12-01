@@ -11,9 +11,15 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         public static IEnumerable<long> GetDurationOfFlightsWithSmoothRudder(SmartPlaneUser targetUser)
         {
             var allConnections = GetEndAndStartTimesOfAllConnections(targetUser);
-            var motorDatasInRange = GetAllMotorDatasWithinConnections(allConnections, targetUser);
-            long startTime = motorDatasInRange.First().First().TimeStamp;
-            long endTime = motorDatasInRange.First().First().TimeStamp;
+            var motorDatasInRange = GetAllMotorDatasWithinConnections(allConnections, targetUser).ToList();
+            if (motorDatasInRange.Any() == false)
+            {
+                yield break;
+            }
+
+            // initialize start and endTime to the same value to ensure correct calculation
+            long startTime = motorDatasInRange.First().First().TimeStamp;            
+            long endTime = startTime;
             var lastValue = motorDatasInRange.First().First().Value;
             long duration = 0;
             foreach (var connection in motorDatasInRange)

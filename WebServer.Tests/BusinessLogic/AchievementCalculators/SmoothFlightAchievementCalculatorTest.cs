@@ -97,5 +97,16 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             //Assert
             Assert.That(user.Achievements.First().Progress, Is.EqualTo(0));
         }
+
+        [Test]
+        public void Test_if_Calculator_behaves_good_with_no_data()
+        {
+            //Arrange
+            SmartPlaneUser user = CreateSmartPlaneUser();            
+            //Act
+            SystemUnderTest.CalculateAchievementProgress(user);
+            //Assert
+            Assert.That(user.Achievements.First().Progress, Is.EqualTo(0));
+        }
     }
 }
