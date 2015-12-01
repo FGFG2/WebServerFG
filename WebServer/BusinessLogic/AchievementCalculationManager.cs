@@ -147,7 +147,6 @@ namespace WebServer.BusinessLogic
                 TaskHelper.TryToStopTask(_achievementCalculationTask,_achievementCalculationCancelSource);
                 _achievementCalculationCancelSource.Dispose();
                 _achievementCalculationTask.Dispose();
-                _logger.Log("Disposed", LogLevel.Info);
             }
         }
         #endregion
