@@ -61,7 +61,14 @@ namespace WebServer.BusinessLogic
         {
             foreach (var achievementCalculator in _achievementCalculators)
             {
-                achievementCalculator.CalculateAchievementProgress(user);
+                try
+                {
+                    achievementCalculator.CalculateAchievementProgress(user);
+                }
+                catch (Exception e)
+                {
+                    _logger.Log($"The calculation of the AchievementCalculator {achievementCalculator.GetType()}, throws a exception:{e.Message}",LogLevel.Error);
+                }
             }
         }
 
