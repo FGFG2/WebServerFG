@@ -17,7 +17,7 @@ namespace WebServer
             // it is NOT necessary to register your controllers
             container.RegisterType<IAchievementDb, AchievementDbAbstraction>();
             container.RegisterType<IAchievementCalculatorDetector, AchievementCalculatorDetector>();
-            container.RegisterType<IAchievementCalculationManager, AchievementCalculationManager>(container.Resolve<ContainerControlledLifetimeManager>());
+            container.RegisterType<IAchievementCalculationManager, AchievementCalculationManager>();
             container.RegisterType<ILoggerFacade, LoggerNLog>(container.Resolve<ContainerControlledLifetimeManager>());
 
             GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);

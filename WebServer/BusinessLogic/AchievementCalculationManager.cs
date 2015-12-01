@@ -41,14 +41,13 @@ namespace WebServer.BusinessLogic
         {
             _achievementDb = achievementDb;
             _logger = logger;
-            _userWithChangedData = new ConcurrentDictionary<SmartPlaneUser,byte>();
+            _userWithChangedData = new ConcurrentDictionary<SmartPlaneUser, byte>();
 
             _achievementCalculators = _getAvailableAchievementCalculators(achievementDetector);
 
             _achievementCalculationCancelSource = new CancellationTokenSource();
             _achievementCalculationTask = new Task(_achievementCalculationTaskAction, _achievementCalculationCancelSource.Token, TaskCreationOptions.LongRunning);
-            _achievementCalculationTask.Start();
-        }
+         }
 
         private IList<IAchievementCalculator> _getAvailableAchievementCalculators(IAchievementCalculatorDetector achievementDetector)
         {
@@ -63,15 +62,7 @@ namespace WebServer.BusinessLogic
         #region Achievement calculation task
         private void _achievementCalculationTaskAction()
         {
-            while (_achievementCalculationCancelSource.IsCancellationRequested == false)
-            {
-                _logger.Log("Starting to update achievements.", LogLevel.Debug);
-                _updateAchievements();
-                _logger.Log("Finished updating achievements.", LogLevel.Debug);
-
-                // Avoid busy-wait, Calculate each seconds to limit the load for the server.
-                Thread.Sleep(1000);
-            }
+            _updateAchievements();
         }
 
         private void _updateAchievements()
@@ -107,7 +98,7 @@ namespace WebServer.BusinessLogic
             {
                 achievementCalculator.CalculateAchievementProgress(user);
             }
-        } 
+        }
         #endregion
 
 
@@ -124,6 +115,7 @@ namespace WebServer.BusinessLogic
             lock (_userWithChangedData)
             {
                 _userWithChangedData.AddOrUpdate(_achievementDb.GetSmartPlaneUserById(userId), 0, (key, oldValue) => 0);
+                _achievementCalculationTask.Start();
             }
         }
 
@@ -144,10 +136,9 @@ namespace WebServer.BusinessLogic
         {
             if (disposing)
             {
-                TaskHelper.TryToStopTask(_achievementCalculationTask,_achievementCalculationCancelSource);
+                TaskHelper.TryToStopTask(_achievementCalculationTask, _achievementCalculationCancelSource);
                 _achievementCalculationCancelSource.Dispose();
                 _achievementCalculationTask.Dispose();
-                _logger.Log("Disposed", LogLevel.Info);
             }
         }
         #endregion
