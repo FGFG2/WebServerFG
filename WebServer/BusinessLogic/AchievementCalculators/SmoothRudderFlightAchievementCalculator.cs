@@ -6,13 +6,13 @@ using WebServer.Models;
 
 namespace WebServer.BusinessLogic.AchievementCalculators
 {
-    public class SmoothFlightAchievementCalculator : AchievementCalculator
+    public class SmoothRudderFlightAchievementCalculator : AchievementCalculator
     {
-        public const string AchievementName = "Ruhiger Flug 1";
+        public const string AchievementName = "Ruhiger Flug (Ruder)";
         public const int OnePercentStep =6000;        
 
 
-        public SmoothFlightAchievementCalculator() : base(AchievementName)
+        public SmoothRudderFlightAchievementCalculator() : base(AchievementName)
         {
         }
 

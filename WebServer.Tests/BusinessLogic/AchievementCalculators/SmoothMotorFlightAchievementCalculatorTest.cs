@@ -9,15 +9,15 @@ using WebServer.Models;
 
 namespace WebServer.Tests.BusinessLogic.AchievementCalculators
 {
-    class SmoothFlightAchievementCalculatorTest : AchievementTestBase<SmoothFlightAchievementCalculator>
+    class SmoothMotorFlightAchievementCalculatorTest : AchievementTestBase<SmoothMotorFlightAchievementCalculator>
     {
-        public const int OnePercentStep = SmoothFlightAchievementCalculator.OnePercentStep;
+        public const int OnePercentStep = SmoothMotorFlightAchievementCalculator.OnePercentStep;
 
         [SetUp]
         protected override void SetUp()
         {
             base.SetUp();
-            SystemUnderTest = new SmoothFlightAchievementCalculator();
+            SystemUnderTest = new SmoothMotorFlightAchievementCalculator();
         }
         
         [TestCase(100)]
@@ -107,6 +107,44 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             SystemUnderTest.CalculateAchievementProgress(user);
             //Assert
             Assert.That(user.Achievements.First().Progress, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void Test_if_progress_is_calculated_correct_over_multiple_connections()
+        {
+            //Arrange
+            SmartPlaneUser user = CreateSmartPlaneUser();
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
+            for (int i = 0; i <= 6; i++)
+            {
+                user.MotorDatas.Add(new MotorData { TimeStamp = i * 10000, Value = 125 });                
+            }
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 60000, Value = false });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 60000, Value = true });
+            for (int i = 6; i <= 12; i++)
+            {             
+                user.MotorDatas.Add(new MotorData { TimeStamp = (i+1) * 10000, Value = 200 });
+            }
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 150000, Value = false });
+            //Act
+            SystemUnderTest.CalculateAchievementProgress(user);
+            //Assert
+            Assert.That(user.Achievements.First().Progress, Is.EqualTo(20));
+        }
+
+        [Test]
+        public void Test_if_calculates_0_with_no_flights()
+        {
+            //Arrange
+            var user = CreateSmartPlaneUser();
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 1, Value = false });
+
+            //Act
+            SystemUnderTest.CalculateAchievementProgress(user);
+
+            //Assert
+            Assert.That(() => user.Achievements.First().Progress, Is.EqualTo(0));
         }
     }
 }

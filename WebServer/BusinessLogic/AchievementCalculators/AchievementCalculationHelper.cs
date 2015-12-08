@@ -8,11 +8,57 @@ namespace WebServer.BusinessLogic.AchievementCalculators
 {
     public static class AchievementCalculationHelper
     {
+
         public static IEnumerable<long> GetDurationOfFlightsWithSmoothRudder(SmartPlaneUser targetUser)
         {
             var allConnections = GetEndAndStartTimesOfAllConnections(targetUser);
+            var rudderDatasInRange = GetAllRudderDatasWithinConnections(allConnections, targetUser).ToList();
+            if (rudderDatasInRange.Any() == false || rudderDatasInRange.First().Any() == false)
+            {
+                yield break;
+            }
+
+            //initialize start and end times with the same value to ensure correct calculation
+            long startTime = rudderDatasInRange.First().First().TimeStamp;
+            long endTime = startTime;
+            var lastValue = rudderDatasInRange.First().First().Value;
+            long duration = 0;
+            foreach (var connections in rudderDatasInRange)
+            {
+                startTime = connections.First().TimeStamp;
+                endTime = startTime;
+                foreach (var rudderData in connections)
+                {
+                    if (rudderData.Value - lastValue > 30 || rudderData.Value - lastValue < -30)
+                    {
+                        //save current length of smooth flying and reset start and endtimes to start new calculation
+                        duration = endTime - startTime;
+                        startTime = rudderData.TimeStamp;
+                        endTime = startTime;
+                        if (duration > 0)
+                        {
+                            yield return (long) duration;
+                        }
+                    }
+                    else
+                    {
+                        endTime = rudderData.TimeStamp;
+                    }
+                    lastValue = rudderData.Value;
+                }
+                duration = endTime - startTime;
+                if (duration > 0)
+                {
+                    yield return (long) duration;
+                }
+            }
+        } 
+
+        public static IEnumerable<long> GetDurationOfFlightsWithSmoothMotor(SmartPlaneUser targetUser)
+        {
+            var allConnections = GetEndAndStartTimesOfAllConnections(targetUser);
             var motorDatasInRange = GetAllMotorDatasWithinConnections(allConnections, targetUser).ToList();
-            if (motorDatasInRange.Any() == false)
+            if (motorDatasInRange.Any() == false || motorDatasInRange.First().Any() == false)
             {
                 yield break;
             }
@@ -23,14 +69,17 @@ namespace WebServer.BusinessLogic.AchievementCalculators
             var lastValue = motorDatasInRange.First().First().Value;
             long duration = 0;
             foreach (var connection in motorDatasInRange)
-            {                
+            {
+                startTime = connection.First().TimeStamp;
+                endTime = startTime;
                 foreach (var motorData in connection)
                 {
                     if (motorData.Value - lastValue > 30 || motorData.Value - lastValue < -30)
-                    {                        
+                    {
+                        //save current length of smooth flying and reset start and endtimes to start new calculation
                         duration = endTime - startTime;
                         startTime = motorData.TimeStamp;
-                        endTime = motorData.TimeStamp;
+                        endTime = startTime;
                         if (duration > 0)
                         {
                             yield return (long) duration;
