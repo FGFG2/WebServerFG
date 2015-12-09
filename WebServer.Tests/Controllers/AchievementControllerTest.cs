@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using NSubstitute;
 using NUnit.Framework;
 using Universial.Test;
@@ -104,6 +105,48 @@ namespace WebServer.Tests.Controllers
 
             //Assert
             Assert.That(() => result.Count(), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void Test_if_GetRankingList_returns_a_sorted_list()
+        {
+            //Arrange 
+            _achievementDbMock.GetAllUser().ReturnsForAnyArgs(info => new []
+            {
+                new SmartPlaneUser {RankingPoints = 100}, 
+                new SmartPlaneUser {RankingPoints = 10}, 
+                new SmartPlaneUser {RankingPoints = 99}, 
+                new SmartPlaneUser {RankingPoints = 0}, 
+                new SmartPlaneUser {RankingPoints = 1} 
+            });
+
+            //Act
+            var result = SystemUnderTest.GetRankingList().ToList();
+
+            //Assert
+            Assert.That(()=>result[0].RankingPoints,Is.EqualTo(100));
+            Assert.That(()=>result[1].RankingPoints,Is.EqualTo(99));
+            Assert.That(()=>result[2].RankingPoints,Is.EqualTo(10));
+            Assert.That(()=>result[3].RankingPoints,Is.EqualTo(1));
+            Assert.That(()=>result[4].RankingPoints,Is.EqualTo(0));
+        }
+
+        [Test]
+        public void Test_if_GetRankingList_dont_ignores_to_equal_rank_points()
+        {
+            //Arrange 
+            _achievementDbMock.GetAllUser().ReturnsForAnyArgs(info => new[]
+            {
+                new SmartPlaneUser {RankingPoints = 100},
+                new SmartPlaneUser {RankingPoints = 100}
+            });
+
+            //Act
+            var result = SystemUnderTest.GetRankingList().ToList();
+
+            //Assert
+            Assert.That(() => result[0].RankingPoints, Is.EqualTo(100));
+            Assert.That(() => result[1].RankingPoints, Is.EqualTo(100));
         }
     }
 }

@@ -35,6 +35,13 @@ namespace WebServer.Controllers
             return currentUser.Achievements.Where(a => a.Progress == 100).AsQueryable();
         }
 
+        // GET: api/RankingList
+        [Route("api/RankingList")]
+        public IQueryable<SmartPlaneUser> GetRankingList()
+        {
+            return _achievementDb.GetAllUser().OrderByDescending(x => x.RankingPoints).AsQueryable();
+        }
+
         private SmartPlaneUser _getCurrentUser()
         {
             var currentUser = _achievementDb.GetSmartPlaneUserById(0);

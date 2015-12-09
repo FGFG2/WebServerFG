@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NLog;
 using WebServer.Models;
 
@@ -24,6 +25,10 @@ namespace WebServer.DataContext
         /// </summary>
         void SaveChanges();
 
+        /// <summary>
+        /// Returns all SmartplaneUsers saved in the database
+        /// </summary>
         void ResetAllData();
+        IEnumerable<SmartPlaneUser> GetAllUser();
     }
 }

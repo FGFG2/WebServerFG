@@ -42,6 +42,11 @@ namespace WebServer.DataContext
             db.SaveChanges();
         }
 
+        public IEnumerable<SmartPlaneUser> GetAllUser()
+        {
+            return _db.SmartPlaneUsers;
+        }
+
         public void Dispose()
         {
             Dispose(true);
