@@ -148,5 +148,20 @@ namespace WebServer.Tests.Controllers
             Assert.That(() => result[0].RankingPoints, Is.EqualTo(100));
             Assert.That(() => result[1].RankingPoints, Is.EqualTo(100));
         }
+
+        [Test]
+        public void Test_GetRankingList_with_no_users()
+        {
+            //Arrange 
+            _achievementDbMock.GetAllUser().ReturnsForAnyArgs(info => new SmartPlaneUser[]
+            {
+            });
+
+            //Act
+            var result = SystemUnderTest.GetRankingList().ToList();
+
+            //Assert
+            Assert.That(()=>result.Any(),Is.False);
+        }
     }
 }
