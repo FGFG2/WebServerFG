@@ -1,7 +1,6 @@
 ﻿using System.Linq;
-using System.Threading;
 using System.Web.Http;
-using WebServer.BusinessLogic;
+using Microsoft.AspNet.Identity;
 using WebServer.DataContext;
 using WebServer.Models;
 
@@ -35,9 +34,14 @@ namespace WebServer.Controllers
             return currentUser.Achievements.Where(a => a.Progress == 100).AsQueryable();
         }
 
+        /// <summary>
+        /// Returns the user associated with the token used.
+        /// </summary>
+        /// <returns></returns>
         private SmartPlaneUser _getCurrentUser()
         {
-            var currentUser = _achievementDb.GetSmartPlaneUserById(0);
+            var callingUser = RequestContext.Principal.Identity.GetUserId();
+            var currentUser = _achievementDb.GetSmartPlaneUserByApplicationUserId(callingUser);
             return currentUser;
         }
 

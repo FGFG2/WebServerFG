@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Universial.Core.Utilities;
 using WebServer.DataContext;
 using WebServer.Logging;
 using WebServer.Models;
@@ -74,13 +72,13 @@ namespace WebServer.BusinessLogic
 
         public void UpdateForUser(int userId)
         {
-            _addUserToAchievementUpdateQueue(userId);
+            _startAchievementUpdateForUser(userId);
 
             var addedUserMessage = $"Added user with ID {userId} to achievement update queue.";
             _logger.Log(addedUserMessage, LogLevel.Info);
         }
 
-        private void _addUserToAchievementUpdateQueue(int userId)
+        private void _startAchievementUpdateForUser(int userId)
         {
             _userIdToUpdate = userId;
             _updateTask.Start();

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using NLog;
 using WebServer.Models;
 
 namespace WebServer.DataContext
@@ -8,7 +7,20 @@ namespace WebServer.DataContext
     public interface IAchievementDb : IDisposable
     {
         /// <summary>
-        /// Get a SmartPlaneUser by íts userId
+        /// Adds a SmartPlaneUser to the database.
+        /// </summary>
+        /// <returns></returns>
+        void AddNewSmartplaneUser(string id);
+
+        /// <summary>
+        /// Get a SmartPlaneUser by its related application userId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        SmartPlaneUser GetSmartPlaneUserByApplicationUserId(string userId);
+
+        /// <summary>
+        /// Get a SmartPlaneUser by its userId
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
@@ -24,6 +36,9 @@ namespace WebServer.DataContext
         /// </summary>
         void SaveChanges();
 
+        /// <summary>
+        /// Removes all database entries.
+        /// </summary>
         void ResetAllData();
     }
 }

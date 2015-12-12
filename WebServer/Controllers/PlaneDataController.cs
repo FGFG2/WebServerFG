@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Microsoft.AspNet.Identity;
 using Microsoft.Practices.ObjectBuilder2;
 using Newtonsoft.Json.Serialization;
 using WebServer.BusinessLogic;
@@ -47,8 +48,8 @@ namespace WebServer.Controllers
         }
 
 
-        private HttpResponseMessage _addDataToUser<DataValueType, AchievementDataType>(SmartPlaneUser targetUser, IList<AchievementDataType> targetList, Dictionary<long, DataValueType> dataMap)
-            where AchievementDataType : AchievementData<DataValueType>, new()
+        private HttpResponseMessage _addDataToUser<TDataValueType, TAchievementDataType>(SmartPlaneUser targetUser, IList<TAchievementDataType> targetList, Dictionary<long, TDataValueType> dataMap)
+            where TAchievementDataType : AchievementData<TDataValueType>, new()
         {
             if (!_checkData(dataMap))
             {
@@ -60,7 +61,7 @@ namespace WebServer.Controllers
             {
                 foreach (var dataValue in dataMap)
                 {
-                    targetList.Add(new AchievementDataType { TimeStamp = dataValue.Key, Value = dataValue.Value });
+                    targetList.Add(new TAchievementDataType { TimeStamp = dataValue.Key, Value = dataValue.Value });
                 }
                 _logger.Log($"Added {dataMap.Count} new entries to user with ID {targetUser.Id}.", LogLevel.Debug);
 
@@ -152,9 +153,14 @@ namespace WebServer.Controllers
         #endregion
 
 
+        /// <summary>
+        /// Returns the user associated with the token used.
+        /// </summary>
+        /// <returns></returns>
         private SmartPlaneUser _getCurrentUser()
         {
-            var currentUser = _achievementDb.GetSmartPlaneUserById(0);
+            var callingUser = RequestContext.Principal.Identity.GetUserId();
+            var currentUser = _achievementDb.GetSmartPlaneUserByApplicationUserId(callingUser);
             return currentUser;
         }
 
