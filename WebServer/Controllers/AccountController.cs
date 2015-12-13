@@ -6,14 +6,12 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.ModelBinding;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
-using Microsoft.Practices.Unity;
 using WebServer.DataContext;
 using WebServer.Models;
 using WebServer.Providers;
@@ -28,10 +26,6 @@ namespace WebServer.Controllers
         private readonly IAchievementDb _achievementDb;
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
-        [InjectionConstructor]
-        public AccountController()
-        {
-        }
 
         public AccountController(ApplicationUserManager userManager,
             ISecureDataFormat<AuthenticationTicket> accessTokenFormat, IAchievementDb achievementDb)

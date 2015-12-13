@@ -9,6 +9,7 @@ namespace WebServer.Controllers
     /// <summary>
     /// Provides the RESTful API regarding the achievements.
     /// </summary>
+    [Authorize]
     public class AchievementController : ApiController
     {
         private readonly IAchievementDb _achievementDb;
