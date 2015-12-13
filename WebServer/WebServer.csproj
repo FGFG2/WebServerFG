@@ -261,10 +261,6 @@
     <Compile Include="DataContext\201510271614524_InitialCreate.Designer.cs">
       <DependentUpon>201510271614524_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataContext\201512121229536_InitialCreate1.cs" />
-    <Compile Include="DataContext\201512121229536_InitialCreate1.Designer.cs">
-      <DependentUpon>201512121229536_InitialCreate1.cs</DependentUpon>
-    </Compile>
     <Compile Include="DataContext\AchievementDb.cs" />
     <Compile Include="DataContext\AchievementDbAbstraction.cs" />
     <Compile Include="DataContext\Configuration.cs" />
@@ -367,9 +363,6 @@
   <ItemGroup>
     <EmbeddedResource Include="DataContext\201510271614524_InitialCreate.resx">
       <DependentUpon>201510271614524_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DataContext\201512121229536_InitialCreate1.resx">
-      <DependentUpon>201512121229536_InitialCreate1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

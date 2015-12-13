@@ -22,7 +22,7 @@ namespace WebServer.DataContext
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        ReleatedApplicationUserId = c.Int(nullable: false),
+                        ReleatedApplicationUserId = c.String(),
                     })
                 .PrimaryKey(t => t.Id);
             
