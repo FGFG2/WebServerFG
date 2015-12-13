@@ -24,6 +24,7 @@ namespace WebServer.Tests.Controllers
 
             _smartPlaneTestUser = CreateSmartPlaneUser();
             _achievementDbMock.GetSmartPlaneUserById(0).ReturnsForAnyArgs(_smartPlaneTestUser);
+            _achievementDbMock.GetSmartPlaneUserByApplicationUserId("").ReturnsForAnyArgs(_smartPlaneTestUser);
         }
 
         [Test]
