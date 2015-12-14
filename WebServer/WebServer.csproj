@@ -257,9 +257,9 @@
     <Compile Include="Controllers\AchievementController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PlaneDataController.cs" />
-    <Compile Include="DataContext\201510271614524_InitialCreate.cs" />
-    <Compile Include="DataContext\201510271614524_InitialCreate.Designer.cs">
-      <DependentUpon>201510271614524_InitialCreate.cs</DependentUpon>
+    <Compile Include="DataContext\201512131243353_InitialCreate.cs" />
+    <Compile Include="DataContext\201512131243353_InitialCreate.Designer.cs">
+      <DependentUpon>201512131243353_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="DataContext\AchievementDb.cs" />
     <Compile Include="DataContext\AchievementDbAbstraction.cs" />
@@ -361,8 +361,8 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DataContext\201510271614524_InitialCreate.resx">
-      <DependentUpon>201510271614524_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="DataContext\201512131243353_InitialCreate.resx">
+      <DependentUpon>201512131243353_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -6,14 +6,13 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.ModelBinding;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
-using Microsoft.Practices.Unity;
+using WebServer.DataContext;
 using WebServer.Models;
 using WebServer.Providers;
 using WebServer.Results;
@@ -24,16 +23,14 @@ namespace WebServer.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
+        private readonly IAchievementDb _achievementDb;
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
-        [InjectionConstructor]
-        public AccountController()
-        {
-        }
 
         public AccountController(ApplicationUserManager userManager,
-            ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
+            ISecureDataFormat<AuthenticationTicket> accessTokenFormat, IAchievementDb achievementDb)
         {
+            _achievementDb = achievementDb;
             UserManager = userManager;
             AccessTokenFormat = accessTokenFormat;
         }
@@ -330,6 +327,8 @@ namespace WebServer.Controllers
             }
 
             var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
+            _achievementDb.AddNewSmartplaneUser(user.Id);
+            _achievementDb.SaveChanges();
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 

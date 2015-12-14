@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Universial.Core.Utilities;
 using WebServer.DataContext;
 using WebServer.Logging;
 using WebServer.Models;
@@ -57,7 +55,7 @@ namespace WebServer.BusinessLogic
             _calculateRankingForUser(user);
             _achievementDb.SaveChanges();
         }
-        
+
         private void _calculateAchievementsForUser(SmartPlaneUser user)
         {
             foreach (var achievementCalculator in _achievementCalculators)
@@ -80,7 +78,7 @@ namespace WebServer.BusinessLogic
             //The first version of ranking calculation uses a constant for each achievement. So all achievements got the same points
             const int achievementPoints = 1;
             foreach (var achievement in user.Achievements)
-            {
+        {
                 user.RankingPoints += achievementPoints * achievement.Progress;
             }
         }

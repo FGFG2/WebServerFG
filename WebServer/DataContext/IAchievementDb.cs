@@ -9,7 +9,20 @@ namespace WebServer.DataContext
     public interface IAchievementDb : IDisposable
     {
         /// <summary>
-        /// Get a SmartPlaneUser by íts userId
+        /// Adds a SmartPlaneUser to the database.
+        /// </summary>
+        /// <returns></returns>
+        void AddNewSmartplaneUser(string id);
+
+        /// <summary>
+        /// Get a SmartPlaneUser by its related application userId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        SmartPlaneUser GetSmartPlaneUserByApplicationUserId(string userId);
+
+        /// <summary>
+        /// Get a SmartPlaneUser by its userId
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
@@ -26,9 +39,12 @@ namespace WebServer.DataContext
         void SaveChanges();
 
         /// <summary>
-        /// Returns all SmartplaneUsers saved in the database
+        /// Removes all database entries.
         /// </summary>
         void ResetAllData();
+        /// <summary>
+        /// Returns all SmartplaneUsers saved in the database
+        /// </summary>
         IEnumerable<SmartPlaneUser> GetAllUser();
     }
 }
