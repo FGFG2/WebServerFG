@@ -18,6 +18,7 @@ namespace WebServer.Controllers
     /// Provides the RESTful API to fill the Database with sensor data of the plane.
     /// The provided data will be saved and used to calculate if the user reached a achievement.
     /// </summary>
+    [Authorize]
     public class PlaneDataController : ApiController
     {
         private readonly IAchievementDb _achievementDb;
