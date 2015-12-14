@@ -10,7 +10,7 @@ using WebServer.Models;
 namespace WebServer.BusinessLogic
 {
     /// <summary>
-    /// Handles the achievements of all users which data changed. Updates them asynchronous with a time interval.
+    /// Handles the achievements of all users which data changed.
     /// </summary>
     public class AchievementCalculationManager : IAchievementCalculationManager
     {
@@ -30,7 +30,8 @@ namespace WebServer.BusinessLogic
         /// <param name="achievementDetector">Detector used to find the available achievements</param>
         /// <param name="achievementDb">Instance of the achievement database.</param>
         /// <param name="logger">Logger to use.</param>
-        public AchievementCalculationManager(IAchievementCalculatorDetector achievementDetector, IAchievementDb achievementDb, ILoggerFacade logger)
+        public AchievementCalculationManager(IAchievementCalculatorDetector achievementDetector,
+            IAchievementDb achievementDb, ILoggerFacade logger)
         {
             _achievementDb = achievementDb;
             _logger = logger;
@@ -38,7 +39,8 @@ namespace WebServer.BusinessLogic
             _updateTask = new Task(_updateAchievements);
         }
 
-        private IList<IAchievementCalculator> _getAvailableAchievementCalculators(IAchievementCalculatorDetector achievementDetector)
+        private IList<IAchievementCalculator> _getAvailableAchievementCalculators(
+            IAchievementCalculatorDetector achievementDetector)
         {
             var availableCalculators = achievementDetector.FindAllAchievementCalculator().ToList();
 
@@ -47,7 +49,7 @@ namespace WebServer.BusinessLogic
 
             return availableCalculators;
         }
-        
+
         private void _updateAchievements()
         {
             var user = _achievementDb.GetSmartPlaneUserById(_userIdToUpdate);
@@ -62,12 +64,15 @@ namespace WebServer.BusinessLogic
             {
                 try
                 {
-                    _logger.Log($"start calculation with the calculator: {achievementCalculator.GetType().Name} ", LogLevel.Info);
+                    _logger.Log($"start calculation with the calculator: {achievementCalculator.GetType().Name} ",
+                        LogLevel.Info);
                     achievementCalculator.CalculateAchievementProgress(user);
                 }
                 catch (Exception e)
                 {
-                    _logger.Log($"The calculation of the AchievementCalculator {achievementCalculator.GetType().Name}, throws a exception: {e.Message}",LogLevel.Error);
+                    _logger.Log(
+                        $"The calculation of the AchievementCalculator {achievementCalculator.GetType().Name}, throws a exception: {e.Message}",
+                        LogLevel.Error);
                 }
             }
         }
@@ -78,8 +83,8 @@ namespace WebServer.BusinessLogic
             //The first version of ranking calculation uses a constant for each achievement. So all achievements got the same points
             const int achievementPoints = 1;
             foreach (var achievement in user.Achievements)
-        {
-                user.RankingPoints += achievementPoints * achievement.Progress;
+            {
+                user.RankingPoints += achievementPoints*achievement.Progress;
             }
         }
 
@@ -116,6 +121,7 @@ namespace WebServer.BusinessLogic
                 _achievementDb.Dispose();
             }
         }
+
         #endregion
     }
 }

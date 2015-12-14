@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
-using Microsoft.Practices.ObjectBuilder2;
-using Newtonsoft.Json.Serialization;
 using WebServer.BusinessLogic;
 using WebServer.DataContext;
 using WebServer.Logging;
@@ -25,6 +24,12 @@ namespace WebServer.Controllers
         private readonly IAchievementCalculationManager _calculationManager;
         private readonly ILoggerFacade _logger;
 
+        /// <summary>
+        /// Creates a new instance of the PlaneDataController class.
+        /// </summary>
+        /// <param name="achievementDb">Database used for the Achievement system.</param>
+        /// <param name="calculationManager">CalculationManager used to update the achievements.</param>
+        /// <param name="logger">Logger to use.</param>
         public PlaneDataController(IAchievementDb achievementDb, IAchievementCalculationManager calculationManager, ILoggerFacade logger)
         {
             _achievementDb = achievementDb;
@@ -47,7 +52,6 @@ namespace WebServer.Controllers
             _calculationManager.UpdateForUser(targetUser.Id);
             return new HttpResponseMessage(HttpStatusCode.Created);
         }
-
 
         private HttpResponseMessage _addDataToUser<TDataValueType, TAchievementDataType>(SmartPlaneUser targetUser, IList<TAchievementDataType> targetList, Dictionary<long, TDataValueType> dataMap)
             where TAchievementDataType : AchievementData<TDataValueType>, new()
@@ -153,7 +157,6 @@ namespace WebServer.Controllers
         }
         #endregion
 
-
         /// <summary>
         /// Returns the user associated with the token used.
         /// </summary>
@@ -165,6 +168,7 @@ namespace WebServer.Controllers
             return currentUser;
         }
 
+        #region IDisposable
         protected override void Dispose(bool disposing)
         {
             if (!disposing)
@@ -173,6 +177,7 @@ namespace WebServer.Controllers
             }
             _calculationManager.Dispose();
             _achievementDb.Dispose();
-        }
+        } 
+        #endregion
     }
 }

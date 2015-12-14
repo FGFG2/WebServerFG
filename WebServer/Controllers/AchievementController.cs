@@ -16,6 +16,10 @@ namespace WebServer.Controllers
     {
         private readonly IAchievementDb _achievementDb;
 
+        /// <summary>
+        /// Creates a new instance of the AchievementController class.
+        /// </summary>
+        /// <param name="achievementDb">Database of the achievement system.</param>
         public AchievementController(IAchievementDb achievementDb)
         {
             _achievementDb = achievementDb;

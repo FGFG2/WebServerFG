@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using WebServer.Models;
 
 namespace WebServer.BusinessLogic.AchievementCalculators
 {
+    /// <summary>
+    /// Base class for AchivementCalculators. 
+    /// </summary>
     public abstract class AchievementCalculator : IAchievementCalculator
     {
         private readonly string _achevementName;
@@ -45,7 +46,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         protected abstract int CalculateProgress(SmartPlaneUser targetUser);
 
         /// <summary>
-        /// Factory method which creates the Achievement releted to this calculator.
+        /// Factory method which creates the Achievement related to this calculator.
         /// </summary>
         /// <returns></returns>
         protected abstract Achievement CreateAchievement();
