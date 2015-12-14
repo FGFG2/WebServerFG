@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using WebServer.DataContext;
 using WebServer.Models;
 
@@ -37,9 +39,20 @@ namespace WebServer.Controllers
 
         // GET: api/RankingList
         [Route("api/RankingList")]
-        public IQueryable<SmartPlaneUser> GetRankingList()
+        public IQueryable<KeyValuePair<string,int>> GetRankingList()
         {
-            return _achievementDb.GetAllUser().OrderByDescending(x => x.RankingPoints).AsQueryable();
+            using (var db = new IdentityDbContext())
+            {
+
+                var sortedUser = _achievementDb.GetAllUser().OrderByDescending(x => x.RankingPoints);
+                var returnList = new Dictionary<string, int>();
+                foreach (var user in sortedUser)
+                {
+                    var userName = db.Users.First(u => u.Id.Equals(user.ReleatedApplicationUserId)).UserName;
+                    returnList.Add(userName, user.RankingPoints);
+                }
+                return returnList.AsQueryable();
+            }
         }
 
         /// <summary>

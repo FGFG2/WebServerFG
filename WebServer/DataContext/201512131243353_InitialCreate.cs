@@ -23,6 +23,7 @@ namespace WebServer.DataContext
                     {
                         Id = c.Int(nullable: false, identity: true),
                         ReleatedApplicationUserId = c.String(),
+                        RankingPoints = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
             
