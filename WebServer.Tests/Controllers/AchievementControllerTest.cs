@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using NSubstitute;
 using NUnit.Framework;
 using Universial.Test;
@@ -24,6 +25,7 @@ namespace WebServer.Tests.Controllers
 
             _smartPlaneTestUser = CreateSmartPlaneUser();
             _achievementDbMock.GetSmartPlaneUserById(0).ReturnsForAnyArgs(_smartPlaneTestUser);
+            _achievementDbMock.GetSmartPlaneUserByApplicationUserId("").ReturnsForAnyArgs(_smartPlaneTestUser);
         }
 
         [Test]
@@ -104,6 +106,66 @@ namespace WebServer.Tests.Controllers
 
             //Assert
             Assert.That(() => result.Count(), Is.EqualTo(0));
+        }
+
+        //Tests wont work because GetRankingList uses the IdentityDbContext Database and this Database cannot be mocked
+        //TODO Add a abstraction layer for the IdentityDbContext 
+
+        //[Test]
+        //public void Test_if_GetRankingList_returns_a_sorted_list()
+        //{
+        //    //Arrange 
+        //    _achievementDbMock.GetAllUser().ReturnsForAnyArgs(info => new []
+        //    {
+        //        new SmartPlaneUser {RankingPoints = 100}, 
+        //        new SmartPlaneUser {RankingPoints = 10}, 
+        //        new SmartPlaneUser {RankingPoints = 99}, 
+        //        new SmartPlaneUser {RankingPoints = 0}, 
+        //        new SmartPlaneUser {RankingPoints = 1} 
+        //    });
+
+        //    //Act
+        //    var result = SystemUnderTest.GetRankingList().ToList();
+
+        //    //Assert
+        //    Assert.That(()=>result[0].Value,Is.EqualTo(100));
+        //    Assert.That(()=>result[1].Value, Is.EqualTo(99));
+        //    Assert.That(()=>result[2].Value, Is.EqualTo(10));
+        //    Assert.That(()=>result[3].Value, Is.EqualTo(1));
+        //    Assert.That(()=>result[4].Value, Is.EqualTo(0));
+        //}
+
+        //[Test]
+        //public void Test_if_GetRankingList_dont_ignores_to_equal_rank_points()
+        //{
+        //    //Arrange 
+        //    _achievementDbMock.GetAllUser().ReturnsForAnyArgs(info => new[]
+        //    {
+        //        new SmartPlaneUser {RankingPoints = 100},
+        //        new SmartPlaneUser {RankingPoints = 100}
+        //    });
+
+        //    //Act
+        //    var result = SystemUnderTest.GetRankingList().ToList();
+
+        //    //Assert
+        //    Assert.That(() => result[0].Value, Is.EqualTo(100));
+        //    Assert.That(() => result[1].Value, Is.EqualTo(100));
+        //}
+
+        [Test]
+        public void Test_GetRankingList_with_no_users()
+        {
+            //Arrange 
+            _achievementDbMock.GetAllUser().ReturnsForAnyArgs(info => new SmartPlaneUser[]
+            {
+            });
+
+            //Act
+            var result = SystemUnderTest.GetRankingList().ToList();
+
+            //Assert
+            Assert.That(()=>result.Any(),Is.False);
         }
     }
 }

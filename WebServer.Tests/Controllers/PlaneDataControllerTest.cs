@@ -26,6 +26,7 @@ namespace WebServer.Tests.Controllers
             SystemUnderTest = new PlaneDataController(_achievementDbMock,_achievementCalculatorMock, Substitute.For<ILoggerFacade>());
             _smartPlaneTestUser = CreateSmartPlaneUser();
             _achievementDbMock.GetSmartPlaneUserById(0).ReturnsForAnyArgs(_smartPlaneTestUser);
+            _achievementDbMock.GetSmartPlaneUserByApplicationUserId("").ReturnsForAnyArgs(_smartPlaneTestUser);
         }
 
         [Test]

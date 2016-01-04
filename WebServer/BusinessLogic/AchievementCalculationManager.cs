@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Universial.Core.Utilities;
 using WebServer.DataContext;
 using WebServer.Logging;
 using WebServer.Models;
@@ -12,7 +10,7 @@ using WebServer.Models;
 namespace WebServer.BusinessLogic
 {
     /// <summary>
-    /// Handles the achievements of all users which data changed. Updates them asynchronous with a time interval.
+    /// Handles the achievements of all users which data changed.
     /// </summary>
     public class AchievementCalculationManager : IAchievementCalculationManager
     {
@@ -22,7 +20,7 @@ namespace WebServer.BusinessLogic
         private readonly IAchievementDb _achievementDb;
         private readonly ILoggerFacade _logger;
         private int _userIdToUpdate;
-        private Task _updateTask;
+        private readonly Task _updateTask;
 
         #endregion;
 
@@ -32,7 +30,8 @@ namespace WebServer.BusinessLogic
         /// <param name="achievementDetector">Detector used to find the available achievements</param>
         /// <param name="achievementDb">Instance of the achievement database.</param>
         /// <param name="logger">Logger to use.</param>
-        public AchievementCalculationManager(IAchievementCalculatorDetector achievementDetector, IAchievementDb achievementDb, ILoggerFacade logger)
+        public AchievementCalculationManager(IAchievementCalculatorDetector achievementDetector,
+            IAchievementDb achievementDb, ILoggerFacade logger)
         {
             _achievementDb = achievementDb;
             _logger = logger;
@@ -40,7 +39,8 @@ namespace WebServer.BusinessLogic
             _updateTask = new Task(_updateAchievements);
         }
 
-        private IList<IAchievementCalculator> _getAvailableAchievementCalculators(IAchievementCalculatorDetector achievementDetector)
+        private IList<IAchievementCalculator> _getAvailableAchievementCalculators(
+            IAchievementCalculatorDetector achievementDetector)
         {
             var availableCalculators = achievementDetector.FindAllAchievementCalculator().ToList();
 
@@ -49,11 +49,12 @@ namespace WebServer.BusinessLogic
 
             return availableCalculators;
         }
-        
+
         private void _updateAchievements()
         {
             var user = _achievementDb.GetSmartPlaneUserById(_userIdToUpdate);
             _calculateAchievementsForUser(user);
+            _calculateRankingForUser(user);
             _achievementDb.SaveChanges();
         }
 
@@ -63,27 +64,37 @@ namespace WebServer.BusinessLogic
             {
                 try
                 {
+                    _logger.Log($"start calculation with the calculator: {achievementCalculator.GetType().Name} ",
+                        LogLevel.Info);
                     achievementCalculator.CalculateAchievementProgress(user);
                 }
                 catch (Exception e)
                 {
-                    _logger.Log($"The calculation of the AchievementCalculator {achievementCalculator.GetType()}, throws a exception:{e.Message}",LogLevel.Error);
+                    _logger.Log(
+                        $"The calculation of the AchievementCalculator {achievementCalculator.GetType().Name}, throws a exception: {e.Message}",
+                        LogLevel.Error);
                 }
+            }
+        }
+
+        private void _calculateRankingForUser(SmartPlaneUser user)
+        {
+            user.RankingPoints = 0;
+            //The first version of ranking calculation uses a constant for each achievement. So all achievements got the same points
+            const int achievementPoints = 1;
+            foreach (var achievement in user.Achievements)
+            {
+                user.RankingPoints += achievementPoints*achievement.Progress;
             }
         }
 
         public void UpdateForUser(int userId)
         {
-            _addUserToAchievementUpdateQueue(userId);
-
-            var addedUserMessage = $"Added user with ID {userId} to achievement update queue.";
-            _logger.Log(addedUserMessage, LogLevel.Info);
-        }
-
-        private void _addUserToAchievementUpdateQueue(int userId)
-        {
             _userIdToUpdate = userId;
             _updateTask.Start();
+
+            var addedUserMessage = $"Started updating user with ID {userId}.";
+            _logger.Log(addedUserMessage, LogLevel.Info);
         }
 
         #region IDisposable
@@ -110,6 +121,7 @@ namespace WebServer.BusinessLogic
                 _achievementDb.Dispose();
             }
         }
+
         #endregion
     }
 }

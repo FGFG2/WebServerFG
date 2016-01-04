@@ -13,7 +13,7 @@ namespace WebServer.DataContext
         
         string IMigrationMetadata.Id
         {
-            get { return "201510271614524_InitialCreate"; }
+            get { return "201512131243353_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source

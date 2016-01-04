@@ -1,7 +1,8 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
-using WebServer.BusinessLogic;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using WebServer.DataContext;
 using WebServer.Models;
 
@@ -10,10 +11,15 @@ namespace WebServer.Controllers
     /// <summary>
     /// Provides the RESTful API regarding the achievements.
     /// </summary>
+    [Authorize]
     public class AchievementController : ApiController
     {
         private readonly IAchievementDb _achievementDb;
 
+        /// <summary>
+        /// Creates a new instance of the AchievementController class.
+        /// </summary>
+        /// <param name="achievementDb">Database of the achievement system.</param>
         public AchievementController(IAchievementDb achievementDb)
         {
             _achievementDb = achievementDb;
@@ -35,9 +41,32 @@ namespace WebServer.Controllers
             return currentUser.Achievements.Where(a => a.Progress == 100).AsQueryable();
         }
 
+        // GET: api/RankingList
+        [Route("api/RankingList")]
+        public IQueryable<KeyValuePair<string,int>> GetRankingList()
+        {
+            using (var db = new IdentityDbContext())
+            {
+
+                var sortedUser = _achievementDb.GetAllUser().OrderByDescending(x => x.RankingPoints);
+                var returnList = new Dictionary<string, int>();
+                foreach (var user in sortedUser)
+                {
+                    var userName = db.Users.First(u => u.Id.Equals(user.ReleatedApplicationUserId)).UserName;
+                    returnList.Add(userName, user.RankingPoints);
+                }
+                return returnList.AsQueryable();
+            }
+        }
+
+        /// <summary>
+        /// Returns the user associated with the token used.
+        /// </summary>
+        /// <returns></returns>
         private SmartPlaneUser _getCurrentUser()
         {
-            var currentUser = _achievementDb.GetSmartPlaneUserById(0);
+            var callingUser = RequestContext.Principal.Identity.GetUserId();
+            var currentUser = _achievementDb.GetSmartPlaneUserByApplicationUserId(callingUser);
             return currentUser;
         }
 

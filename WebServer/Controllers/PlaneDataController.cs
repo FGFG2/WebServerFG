@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Web.Http;
-using Microsoft.Practices.ObjectBuilder2;
-using Newtonsoft.Json.Serialization;
+using Microsoft.AspNet.Identity;
 using WebServer.BusinessLogic;
 using WebServer.DataContext;
 using WebServer.Logging;
@@ -17,12 +17,19 @@ namespace WebServer.Controllers
     /// Provides the RESTful API to fill the Database with sensor data of the plane.
     /// The provided data will be saved and used to calculate if the user reached a achievement.
     /// </summary>
+    [Authorize]
     public class PlaneDataController : ApiController
     {
         private readonly IAchievementDb _achievementDb;
         private readonly IAchievementCalculationManager _calculationManager;
         private readonly ILoggerFacade _logger;
 
+        /// <summary>
+        /// Creates a new instance of the PlaneDataController class.
+        /// </summary>
+        /// <param name="achievementDb">Database used for the Achievement system.</param>
+        /// <param name="calculationManager">CalculationManager used to update the achievements.</param>
+        /// <param name="logger">Logger to use.</param>
         public PlaneDataController(IAchievementDb achievementDb, IAchievementCalculationManager calculationManager, ILoggerFacade logger)
         {
             _achievementDb = achievementDb;
@@ -46,9 +53,8 @@ namespace WebServer.Controllers
             return new HttpResponseMessage(HttpStatusCode.Created);
         }
 
-
-        private HttpResponseMessage _addDataToUser<DataValueType, AchievementDataType>(SmartPlaneUser targetUser, IList<AchievementDataType> targetList, Dictionary<long, DataValueType> dataMap)
-            where AchievementDataType : AchievementData<DataValueType>, new()
+        private HttpResponseMessage _addDataToUser<TDataValueType, TAchievementDataType>(SmartPlaneUser targetUser, IList<TAchievementDataType> targetList, Dictionary<long, TDataValueType> dataMap)
+            where TAchievementDataType : AchievementData<TDataValueType>, new()
         {
             if (!_checkData(dataMap))
             {
@@ -60,7 +66,7 @@ namespace WebServer.Controllers
             {
                 foreach (var dataValue in dataMap)
                 {
-                    targetList.Add(new AchievementDataType { TimeStamp = dataValue.Key, Value = dataValue.Value });
+                    targetList.Add(new TAchievementDataType { TimeStamp = dataValue.Key, Value = dataValue.Value });
                 }
                 _logger.Log($"Added {dataMap.Count} new entries to user with ID {targetUser.Id}.", LogLevel.Debug);
 
@@ -151,13 +157,18 @@ namespace WebServer.Controllers
         }
         #endregion
 
-
+        /// <summary>
+        /// Returns the user associated with the token used.
+        /// </summary>
+        /// <returns></returns>
         private SmartPlaneUser _getCurrentUser()
         {
-            var currentUser = _achievementDb.GetSmartPlaneUserById(0);
+            var callingUser = RequestContext.Principal.Identity.GetUserId();
+            var currentUser = _achievementDb.GetSmartPlaneUserByApplicationUserId(callingUser);
             return currentUser;
         }
 
+        #region IDisposable
         protected override void Dispose(bool disposing)
         {
             if (!disposing)
@@ -166,6 +177,7 @@ namespace WebServer.Controllers
             }
             _calculationManager.Dispose();
             _achievementDb.Dispose();
-        }
+        } 
+        #endregion
     }
 }

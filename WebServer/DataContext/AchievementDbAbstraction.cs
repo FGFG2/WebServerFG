@@ -16,9 +16,23 @@ namespace WebServer.DataContext
             _db = new AchievementDb();
         }
 
+        public void AddNewSmartplaneUser(string id)
+        {
+            var newUser = new SmartPlaneUser
+            {
+                ReleatedApplicationUserId = id
+            };
+            _db.SmartPlaneUsers.Add(newUser);
+        }
+
+        public SmartPlaneUser GetSmartPlaneUserByApplicationUserId(string userId)
+        {
+            return _db.SmartPlaneUsers.FirstOrDefault(u => u.ReleatedApplicationUserId.Equals(userId));
+        }
+
         public SmartPlaneUser GetSmartPlaneUserById(int userId)
         {
-            return _db.SmartPlaneUsers.FirstOrDefault(/*u => u.Id == userId*/);
+            return _db.SmartPlaneUsers.FirstOrDefault(u => u.Id == userId);
         }
 
         public IEnumerable<LogEntry> GetAllLogEntries()
@@ -40,6 +54,11 @@ namespace WebServer.DataContext
             var user = db.SmartPlaneUsers.FirstOrDefault();
             user.Achievements.ForEach(x => x.Progress = 0);
             db.SaveChanges();
+        }
+
+        public IEnumerable<SmartPlaneUser> GetAllUser()
+        {
+            return _db.SmartPlaneUsers;
         }
 
         public void Dispose()
