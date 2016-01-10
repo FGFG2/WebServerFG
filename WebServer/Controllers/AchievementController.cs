@@ -12,24 +12,21 @@ namespace WebServer.Controllers
     /// Provides the RESTful API regarding the achievements.
     /// </summary>
     [Authorize]
-    public class AchievementController : ApiController
+    public class AchievementController : AuthorizedControllerBase
     {
-        private readonly IAchievementDb _achievementDb;
-
         /// <summary>
         /// Creates a new instance of the AchievementController class.
         /// </summary>
         /// <param name="achievementDb">Database of the achievement system.</param>
-        public AchievementController(IAchievementDb achievementDb)
+        public AchievementController(IAchievementDb achievementDb) : base(achievementDb)
         {
-            _achievementDb = achievementDb;
         }
 
         // GET: api/AllAchievements
         [Route("api/AllAchievements")]
         public IQueryable<Achievement> GetAllAchievements()
         {
-            var currentUser = _getCurrentUser();
+            var currentUser = GetCurrentUser();
             return currentUser.Achievements.AsQueryable();
         }
 
@@ -37,7 +34,7 @@ namespace WebServer.Controllers
         [Route("api/ObtainedAchievements")]
         public IQueryable<Achievement> GetObtainedAchievements()
         {
-            var currentUser = _getCurrentUser();
+            var currentUser = GetCurrentUser();
             return currentUser.Achievements.Where(a => a.Progress == 100).AsQueryable();
         }
 
@@ -48,7 +45,7 @@ namespace WebServer.Controllers
             using (var db = new IdentityDbContext())
             {
 
-                var sortedUser = _achievementDb.GetAllUser().OrderByDescending(x => x.RankingPoints);
+                var sortedUser = AchievementDb.GetAllUser().OrderByDescending(x => x.RankingPoints);
                 var returnList = new Dictionary<string, int>();
                 foreach (var user in sortedUser)
                 {
@@ -59,24 +56,13 @@ namespace WebServer.Controllers
             }
         }
 
-        /// <summary>
-        /// Returns the user associated with the token used.
-        /// </summary>
-        /// <returns></returns>
-        private SmartPlaneUser _getCurrentUser()
-        {
-            var callingUser = RequestContext.Principal.Identity.GetUserId();
-            var currentUser = _achievementDb.GetSmartPlaneUserByApplicationUserId(callingUser);
-            return currentUser;
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (!disposing)
             {
                 return;
             }
-            _achievementDb.Dispose();
+            AchievementDb.Dispose();
         }
     }
 }

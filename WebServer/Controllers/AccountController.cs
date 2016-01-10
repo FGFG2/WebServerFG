@@ -326,7 +326,9 @@ namespace WebServer.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            // SmartplaneUser needs to be created here to build the connection between ApplicationUser and SmartplaneUser.
+            // There is a 1:1 binding between SmartplaneUser and ApplicationUser.
             _achievementDb.AddNewSmartplaneUser(user.Id);
             _achievementDb.SaveChanges();
 
