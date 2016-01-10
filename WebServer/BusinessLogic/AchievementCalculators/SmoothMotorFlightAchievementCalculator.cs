@@ -19,12 +19,12 @@ namespace WebServer.BusinessLogic.AchievementCalculators
 
         protected override int CalculateProgress(SmartPlaneUser targetUser)
         {
-            var smoothFlightDurations = AchievementCalculationHelper.GetDurationOfFlightsWithSmoothMotor(targetUser).ToList();
-            if (smoothFlightDurations.Any() == false)
+            var smoothMotorFlightDurations = AchievementCalculationHelper.GetDurationOfFlightsWithSmoothMotor(targetUser).ToList();
+            if (smoothMotorFlightDurations.Any() == false)
             {
                 return 0;
             }
-            var progress = smoothFlightDurations.Sum() / OnePercentStep;
+            var progress = smoothMotorFlightDurations.Sum() / OnePercentStep;
             if (progress >= 100)
             {
                 return 100;
