@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using WebServer.Logging;
 
 namespace WebServer.BusinessLogic
 {
@@ -10,6 +11,13 @@ namespace WebServer.BusinessLogic
     /// </summary>
     public class AchievementCalculatorDetector : IAchievementCalculatorDetector
     {
+        private readonly ILoggerFacade _logger;
+
+        public AchievementCalculatorDetector(ILoggerFacade logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         /// Searches for all implementations of IAchievementCalculator inside the Assembly of IAchievementCalculator
         /// and instantiates all of them.
@@ -23,7 +31,7 @@ namespace WebServer.BusinessLogic
             return from type in assemblyOfAchievementCalculators.GetTypes()
                    let isCalculator = type.GetInterfaces().Contains(typeof (IAchievementCalculator))
                    where isCalculator && type.IsAbstract == false 
-                   select Activator.CreateInstance(type) as IAchievementCalculator;
+                   select Activator.CreateInstance(type, _logger) as IAchievementCalculator;
         }
     }
 }

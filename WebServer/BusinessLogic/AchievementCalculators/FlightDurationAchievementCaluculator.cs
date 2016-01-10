@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.BusinessLogic.AchievementCalculators
@@ -9,7 +10,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         public const string AchievementName = "Flugmeilen";
         public const int OnePercentStep = 6000; // One minute in mili secounds
 
-        public FlightDurationAchievementCaluculator() : base(AchievementName)
+        public FlightDurationAchievementCaluculator(ILoggerFacade logger) : base(AchievementName, logger)
         {
         }
 

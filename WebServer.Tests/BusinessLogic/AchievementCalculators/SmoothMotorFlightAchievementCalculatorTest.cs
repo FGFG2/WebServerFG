@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NSubstitute;
 using NUnit.Framework;
 using WebServer.BusinessLogic.AchievementCalculators;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.Tests.BusinessLogic.AchievementCalculators
@@ -17,7 +19,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         protected override void SetUp()
         {
             base.SetUp();
-            SystemUnderTest = new SmoothMotorFlightAchievementCalculator();
+            SystemUnderTest = new SmoothMotorFlightAchievementCalculator(Substitute.For<ILoggerFacade>());
         }
         
         [TestCase(100)]

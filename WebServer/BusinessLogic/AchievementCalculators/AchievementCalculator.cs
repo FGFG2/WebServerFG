@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.BusinessLogic.AchievementCalculators
@@ -9,11 +10,14 @@ namespace WebServer.BusinessLogic.AchievementCalculators
     /// </summary>
     public abstract class AchievementCalculator : IAchievementCalculator
     {
-        private readonly string _achevementName;
+        protected ILoggerFacade Logger;
 
-        protected AchievementCalculator(string achevementName)
+        private readonly string _achievementName;
+
+        protected AchievementCalculator(string achievementName, ILoggerFacade logger)
         {
-            _achevementName = achevementName;
+            Logger = logger;
+            _achievementName = achievementName;
         }
 
         public void CalculateAchievementProgress(SmartPlaneUser targetUser)
@@ -21,20 +25,31 @@ namespace WebServer.BusinessLogic.AchievementCalculators
             var relatedAchievement = _addAchievementWhenMissing(targetUser);
             if (relatedAchievement.Progress == 100)
             {
+                var skippedMsg =$"Skipped calculation of Achievement {_achievementName} of user {targetUser.Id}: Already achieved.";
+                Logger.Log(skippedMsg, LogLevel.Debug);
                 return;
             }
+            var newProgress = CalculateProgress(targetUser);
+
+            var newProgressMsg = $"Achievement {_achievementName} of user {targetUser.Id}, updated progress to {newProgress}.";
+            Logger.Log(newProgressMsg, LogLevel.Info);
+
             relatedAchievement.Progress = Convert.ToByte(CalculateProgress(targetUser));
         }
 
         private Achievement _addAchievementWhenMissing(SmartPlaneUser targetUser)
         {
-            var achievement = targetUser.Achievements.FirstOrDefault(a => a.Name.Equals(_achevementName));
+            var achievement = targetUser.Achievements.FirstOrDefault(a => a.Name.Equals(_achievementName));
             if (achievement != null)
             {
                 return achievement;
             }
             achievement = CreateAchievement();
             targetUser.Achievements.Add(achievement);
+
+            var msg = $"Added missing Achievement {_achievementName} to user {targetUser.Id}.";
+            Logger.Log(msg,LogLevel.Debug);
+
             return achievement;
         }
 
