@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using WebServer.Logging;
 using WebServer.Models;
 
@@ -65,5 +67,10 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         /// </summary>
         /// <returns></returns>
         protected abstract Achievement CreateAchievement();
+
+        protected string GetPathToImage()
+        {
+            return $"Resources/AchievementImages/{_achievementName}";
+        }
     }
 }

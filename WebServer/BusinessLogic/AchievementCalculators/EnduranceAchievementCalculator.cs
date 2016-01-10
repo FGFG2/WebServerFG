@@ -38,7 +38,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 Name = AchievementName,
                 Description = "Fliege 1 Minute am Stück mit deinem Flugzeug!",
                 Progress = 0,
-                ImageUrl = ""
+                ImageUrl = GetPathToImage()
             };
         }
     }

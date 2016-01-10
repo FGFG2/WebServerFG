@@ -37,7 +37,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 Name = AchievementName,
                 Description = "Fliege 10 mal für mindestens 5 sekunden mit voller Motordrehzahl",
                 Progress = 0,
-                ImageUrl = ""
+                ImageUrl = GetPathToImage()
             };
         }
     }

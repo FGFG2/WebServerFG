@@ -35,7 +35,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 Name = AchievementName,
                 Description = "Fliege insgesamt 10 Minuten mit deinem SmartPlane",
                 Progress = 0,
-                ImageUrl = ""
+                ImageUrl = GetPathToImage()
             };
         }
     }

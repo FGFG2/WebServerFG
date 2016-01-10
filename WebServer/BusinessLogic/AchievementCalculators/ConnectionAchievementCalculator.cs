@@ -27,7 +27,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 Name = AchievementName,
                 Description = "Verbinde dich 100 mal mit deinem SmartPlane",
                 Progress = 0,
-                ImageUrl = ""
+                ImageUrl = GetPathToImage()
             };
         }
 
