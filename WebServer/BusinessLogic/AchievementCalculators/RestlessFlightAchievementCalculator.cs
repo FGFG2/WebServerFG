@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.BusinessLogic.AchievementCalculators
@@ -11,7 +12,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         public const string AchievementName = "Unruhiger Flug";
         public const int OnePercentStep = 3000;
 
-        public RestlessFlightAchievementCalculator() : base(AchievementName)
+        public RestlessFlightAchievementCalculator(ILoggerFacade logger) : base(AchievementName, logger)
         {            
         }
 
