@@ -244,7 +244,6 @@
     <Compile Include="BusinessLogic\AchievementCalculatorDetector.cs" />
     <Compile Include="BusinessLogic\AchievementCalculators\AchievementCalculationHelper.cs" />
     <Compile Include="BusinessLogic\AchievementCalculators\AchievementCalculator.cs" />
-    <Compile Include="BusinessLogic\AchievementCalculators\CarousselAcheivementCalculator.cs" />
     <Compile Include="BusinessLogic\AchievementCalculators\RestlessFlightAchievementCalculator.cs" />
     <Compile Include="BusinessLogic\AchievementCalculators\SmoothMotorFlightAchievementCalculator.cs" />
     <Compile Include="BusinessLogic\AchievementCalculators\SmoothRudderFlightAchievementCalculator.cs" />
