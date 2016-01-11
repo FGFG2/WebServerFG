@@ -97,6 +97,51 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                     yield return (long) duration;
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns the Durations of Times without same Motor values
+        /// </summary>
+        /// <param name="targetUser"></param>
+        /// <returns></returns>
+        public static IEnumerable<long> GetDurationsOffRestlessFlyingTimes(SmartPlaneUser targetUser)
+        {
+            var allConnections = GetEndAndStartTimesOfAllConnections(targetUser);
+            var motorDatasInRange = GetAllMotorDatasWithinConnections(allConnections, targetUser);
+            if (motorDatasInRange.Any() == false || motorDatasInRange.First().Any() == false)
+            {
+                yield break;
+            }
+
+            foreach (var motorDatas in motorDatasInRange)
+            {
+                long? startTime = 0;
+                long endtime = 0;
+                long? duration;
+                int lastValue = 999; //definetly different from first value encountered
+                foreach (var motorData in motorDatas)
+                {
+                    if (motorData.Value != lastValue)
+                    {
+                        lastValue = motorData.Value;
+                        endtime = motorData.TimeStamp;
+                    }
+                    else
+                    {
+                        duration = endtime - startTime;
+                        if (duration > 0)
+                        {
+                            yield return (long)duration;
+                        }                        
+                        startTime = motorData.TimeStamp;
+                    }
+                }
+                duration = endtime - startTime;
+                if (duration > 0)
+                {
+                    yield return (long) duration;
+                }
+            }
         } 
 
         /// <summary>
