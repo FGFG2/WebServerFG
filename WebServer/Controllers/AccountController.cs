@@ -12,6 +12,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
+using WebServer.BusinessLogic;
 using WebServer.DataContext;
 using WebServer.Models;
 using WebServer.Providers;
@@ -24,13 +25,15 @@ namespace WebServer.Controllers
     public class AccountController : ApiController
     {
         private readonly IAchievementDb _achievementDb;
+        private readonly IAchievementCalculationManager _achievementCalculationManager;
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
 
         public AccountController(ApplicationUserManager userManager,
-            ISecureDataFormat<AuthenticationTicket> accessTokenFormat, IAchievementDb achievementDb)
+            ISecureDataFormat<AuthenticationTicket> accessTokenFormat, IAchievementDb achievementDb, IAchievementCalculationManager achievementCalculationManager)
         {
             _achievementDb = achievementDb;
+            _achievementCalculationManager = achievementCalculationManager;
             UserManager = userManager;
             AccessTokenFormat = accessTokenFormat;
         }
@@ -331,6 +334,8 @@ namespace WebServer.Controllers
             // There is a 1:1 binding between SmartplaneUser and ApplicationUser.
             _achievementDb.AddNewSmartplaneUser(user.Id);
             _achievementDb.SaveChanges();
+            var spUser = _achievementDb.GetSmartPlaneUserByApplicationUserId(user.Id);
+            _achievementCalculationManager.UpdateForUser(spUser.Id);
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 

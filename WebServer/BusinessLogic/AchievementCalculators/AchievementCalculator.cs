@@ -70,7 +70,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
 
         protected string GetPathToImage()
         {
-            return $"Resources/AchievementImages/{_achievementName}";
+            return $"Resources/AchievementImages/{_achievementName}.png";
         }
     }
 }
