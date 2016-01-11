@@ -1,8 +1,10 @@
 ﻿using System.Linq;
+using NSubstitute;
 using NUnit.Framework;
 using Universial.Test;
 using WebServer.BusinessLogic;
 using WebServer.BusinessLogic.AchievementCalculators;
+using WebServer.Logging;
 
 namespace WebServer.Tests.BusinessLogic
 {
@@ -12,7 +14,7 @@ namespace WebServer.Tests.BusinessLogic
         protected override void SetUp()
         {
             base.SetUp();
-            SystemUnderTest = new AchievementCalculatorDetector();
+            SystemUnderTest = new AchievementCalculatorDetector(Substitute.For<ILoggerFacade>());
         }
 
         [Test]

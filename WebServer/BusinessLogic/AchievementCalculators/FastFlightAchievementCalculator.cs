@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.BusinessLogic.AchievementCalculators
@@ -13,7 +14,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         public const float OnePercentStep = 0.1f;
         public const int NeededDurationWithMaxMotor = 5000;
 
-        public FastFlightAchievementCalculator() : base(AchievementName)
+        public FastFlightAchievementCalculator(ILoggerFacade logger) : base(AchievementName, logger)
         {
         }
 
@@ -36,7 +37,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 Name = AchievementName,
                 Description = "Fliege 10 mal für mindestens 5 sekunden mit voller Motordrehzahl",
                 Progress = 0,
-                ImageUrl = ""
+                ImageUrl = GetPathToImage()
             };
         }
     }

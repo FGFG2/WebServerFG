@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using NSubstitute;
 using NUnit.Framework;
 using WebServer.BusinessLogic.AchievementCalculators;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.Tests.BusinessLogic.AchievementCalculators
@@ -14,7 +16,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         protected override void SetUp()
         {
             base.SetUp();
-            SystemUnderTest = new FastFlightAchievementCalculator();
+            SystemUnderTest = new FastFlightAchievementCalculator(Substitute.For<ILoggerFacade>());
         }
 
         [TestCase(0)]

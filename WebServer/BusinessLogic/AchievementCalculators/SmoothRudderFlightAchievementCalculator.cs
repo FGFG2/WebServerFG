@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.BusinessLogic.AchievementCalculators
@@ -12,7 +13,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         public const int OnePercentStep =6000;        
 
 
-        public SmoothRudderFlightAchievementCalculator() : base(AchievementName)
+        public SmoothRudderFlightAchievementCalculator(ILoggerFacade logger) : base(AchievementName, logger)
         {
         }
 

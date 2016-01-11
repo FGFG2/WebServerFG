@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using NSubstitute;
 using NUnit.Framework;
 using WebServer.BusinessLogic.AchievementCalculators;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.Tests.BusinessLogic.AchievementCalculators
@@ -12,7 +14,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         protected override void SetUp()
         {
             base.SetUp();
-            SystemUnderTest = new EnduranceAchievementCalculator();
+            SystemUnderTest = new EnduranceAchievementCalculator(Substitute.For<ILoggerFacade>());
         }
 
         #region Redundand tests. These test should be covered from the AchievementCalculationHelperTest tests

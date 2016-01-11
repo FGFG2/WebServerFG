@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using NSubstitute;
 using NUnit.Framework;
 using WebServer.BusinessLogic.AchievementCalculators;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.Tests.BusinessLogic.AchievementCalculators
@@ -64,7 +66,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
 
     public class AchievementCalculatorImplementation : AchievementCalculator
     {
-        public AchievementCalculatorImplementation() : base("Test")
+        public AchievementCalculatorImplementation() : base("Test", Substitute.For<ILoggerFacade>())
         {
         }
 

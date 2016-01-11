@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.BusinessLogic.AchievementCalculators
@@ -8,7 +9,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         public const string AchievementName = "ConnectionMaster";
         public const int OnePercentStep = 1;
 
-        public ConnectionAchievementCalculator() : base(AchievementName)
+        public ConnectionAchievementCalculator(ILoggerFacade logger) : base(AchievementName, logger)
         {
         }
 
@@ -26,7 +27,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 Name = AchievementName,
                 Description = "Verbinde dich 100 mal mit deinem SmartPlane",
                 Progress = 0,
-                ImageUrl = ""
+                ImageUrl = GetPathToImage()
             };
         }
 

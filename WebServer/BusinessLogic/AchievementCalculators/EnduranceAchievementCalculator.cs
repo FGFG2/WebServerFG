@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using WebServer.Logging;
 using WebServer.Models;
 
 namespace WebServer.BusinessLogic.AchievementCalculators
@@ -8,7 +9,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         public const string AchievementName = "Ausdauer";
         public const int OnePercentStep = 600;
 
-        public EnduranceAchievementCalculator() : base(AchievementName)
+        public EnduranceAchievementCalculator(ILoggerFacade logger) : base(AchievementName, logger)
         {
         }
 
@@ -37,7 +38,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 Name = AchievementName,
                 Description = "Fliege 1 Minute am Stück mit deinem Flugzeug!",
                 Progress = 0,
-                ImageUrl = ""
+                ImageUrl = GetPathToImage()
             };
         }
     }

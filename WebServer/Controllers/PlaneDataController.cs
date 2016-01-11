@@ -18,9 +18,8 @@ namespace WebServer.Controllers
     /// The provided data will be saved and used to calculate if the user reached a achievement.
     /// </summary>
     [Authorize]
-    public class PlaneDataController : ApiController
+    public class PlaneDataController : AuthorizedControllerBase
     {
-        private readonly IAchievementDb _achievementDb;
         private readonly IAchievementCalculationManager _calculationManager;
         private readonly ILoggerFacade _logger;
 
@@ -30,9 +29,8 @@ namespace WebServer.Controllers
         /// <param name="achievementDb">Database used for the Achievement system.</param>
         /// <param name="calculationManager">CalculationManager used to update the achievements.</param>
         /// <param name="logger">Logger to use.</param>
-        public PlaneDataController(IAchievementDb achievementDb, IAchievementCalculationManager calculationManager, ILoggerFacade logger)
+        public PlaneDataController(IAchievementDb achievementDb, IAchievementCalculationManager calculationManager, ILoggerFacade logger) : base(achievementDb)
         {
-            _achievementDb = achievementDb;
             _calculationManager = calculationManager;
             _logger = logger;
         }
@@ -48,7 +46,7 @@ namespace WebServer.Controllers
 
         private HttpResponseMessage _saveChanges(SmartPlaneUser targetUser)
         {
-            _achievementDb.SaveChanges();
+            AchievementDb.SaveChanges();
             _calculationManager.UpdateForUser(targetUser.Id);
             return new HttpResponseMessage(HttpStatusCode.Created);
         }
@@ -84,7 +82,7 @@ namespace WebServer.Controllers
         [Route("api/SetMotor")]
         public HttpResponseMessage SetMotor(Dictionary<long, int> motorMap)
         {
-            var currentUser = _getCurrentUser();
+            var currentUser = GetCurrentUser();
             return _addDataToUser(currentUser, currentUser.MotorDatas, motorMap);
         }
 
@@ -93,7 +91,7 @@ namespace WebServer.Controllers
         public HttpResponseMessage SetRudder(Dictionary<long, int> rudderMap)
         {
 
-            var currentUser = _getCurrentUser();
+            var currentUser = GetCurrentUser();
             return _addDataToUser(currentUser, currentUser.RudderDatas, rudderMap);
         }
 
@@ -101,7 +99,7 @@ namespace WebServer.Controllers
         [Route("api/SetIsConnected")]
         public HttpResponseMessage SetIsConnected(Dictionary<long, bool> connectionChanges)
         {
-            var currentUser = _getCurrentUser();
+            var currentUser = GetCurrentUser();
             return _addDataToUser(currentUser, currentUser.ConnectedDatas, connectionChanges);
         }
 
@@ -117,7 +115,7 @@ namespace WebServer.Controllers
             {
                 return Request.CreateErrorResponse(HttpStatusCode.Forbidden, "Wrong password");
             }
-            _achievementDb.ResetAllData();
+            AchievementDb.ResetAllData();
             _calculationManager.UpdateForUser(0);
             return Request.CreateResponse(HttpStatusCode.Accepted);
         }
@@ -129,7 +127,7 @@ namespace WebServer.Controllers
         [Route("api/MotorDatas")]
         public IQueryable<MotorData> GetMotorDatas()
         {
-            var currentUser = _getCurrentUser();
+            var currentUser = GetCurrentUser();
             return currentUser.MotorDatas.AsQueryable();
         }
 
@@ -137,7 +135,7 @@ namespace WebServer.Controllers
         [Route("api/ConnectedDatas")]
         public IQueryable<ConnectedData> GetConnectedDatas()
         {
-            var currentUser = _getCurrentUser();
+            var currentUser = GetCurrentUser();
             return currentUser.ConnectedDatas.AsQueryable();
         }
 
@@ -145,7 +143,7 @@ namespace WebServer.Controllers
         [Route("api/RudderDatas")]
         public IQueryable<RudderData> GetRudderDatas()
         {
-            var currentUser = _getCurrentUser();
+            var currentUser = GetCurrentUser();
             return currentUser.RudderDatas.AsQueryable();
         }
         
@@ -153,20 +151,9 @@ namespace WebServer.Controllers
         [Route("api/Logs")]
         public IQueryable<LogEntry> GetLogs()
         {
-            return _achievementDb.GetAllLogEntries().AsQueryable(); 
+            return AchievementDb.GetAllLogEntries().AsQueryable(); 
         }
         #endregion
-
-        /// <summary>
-        /// Returns the user associated with the token used.
-        /// </summary>
-        /// <returns></returns>
-        private SmartPlaneUser _getCurrentUser()
-        {
-            var callingUser = RequestContext.Principal.Identity.GetUserId();
-            var currentUser = _achievementDb.GetSmartPlaneUserByApplicationUserId(callingUser);
-            return currentUser;
-        }
 
         #region IDisposable
         protected override void Dispose(bool disposing)
@@ -176,7 +163,7 @@ namespace WebServer.Controllers
                 return;
             }
             _calculationManager.Dispose();
-            _achievementDb.Dispose();
+            AchievementDb.Dispose();
         } 
         #endregion
     }

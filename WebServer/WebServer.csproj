@@ -258,6 +258,7 @@
     <Compile Include="BusinessLogic\IAchievementCalculatorDetector.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AchievementController.cs" />
+    <Compile Include="Controllers\AuthorizedControllerBase.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PlaneDataController.cs" />
     <Compile Include="DataContext\201512131243353_InitialCreate.cs" />
@@ -298,6 +299,11 @@
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="Resources\AchievementImages\Ausdauer.png" />
+    <Content Include="Resources\AchievementImages\ConnectionMaster.png" />
+    <Content Include="Resources\AchievementImages\Flugmeilen.png" />
+    <Content Include="Resources\AchievementImages\Geschwindigkeit.png" />
+    <Content Include="Resources\AchievementImages\Ruhigerflug.png" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
