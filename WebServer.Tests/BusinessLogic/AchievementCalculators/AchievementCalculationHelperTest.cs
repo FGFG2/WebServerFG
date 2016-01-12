@@ -340,13 +340,16 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             //Arrange 
             const int startTime = 0;
             const int endTime = 100000;
-            var flightTime = new[] { new Tuple<long, long>(startTime, endTime) };
+
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = startTime, Value = true });
+            SystemUnderTest.ConnectedDatas.Add(new ConnectedData { TimeStamp = endTime, Value = false });
+
             SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime, Value = 1 });
             SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime + 1, Value = 0 });
             SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = startTime + 2, Value = 1 });
 
             //Act
-            var allMotorDatasWithinConnections = AchievementCalculationHelper.GetAllMotorDatasWithinConnections(flightTime, SystemUnderTest).ToList();
+            var allMotorDatasWithinConnections = AchievementCalculationHelper.GetAllMotorDatasWithinConnections(SystemUnderTest).ToList();
 
             //Assert
             Assert.That(() => allMotorDatasWithinConnections.Count, Is.EqualTo(1));
@@ -359,8 +362,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             //Arrange 
             const int startTime = 1000;
             const int endTime = 100000;
-            var flightTime = new[] { new Tuple<long, long>(startTime, endTime) };
-
+            
             var expected = new[]
             {
                 new MotorData {TimeStamp = startTime, Value = 1},
@@ -377,7 +379,7 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             SystemUnderTest.MotorDatas.Add(new MotorData { TimeStamp = endTime + 1, Value = 1 });
 
             //Act
-            var allMotorDatasWithinConnections = AchievementCalculationHelper.GetAllMotorDatasWithinConnections(flightTime, SystemUnderTest).ToList();
+            var allMotorDatasWithinConnections = AchievementCalculationHelper.GetAllMotorDatasWithinConnections(SystemUnderTest).ToList();
 
             //Assert
             Assert.That(() => allMotorDatasWithinConnections.Count, Is.EqualTo(1));

@@ -1,43 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using WebGrease.Css.Extensions;
 using WebServer.Models;
 
 namespace WebServer.BusinessLogic.AchievementCalculators
 {
+    /// <summary>
+    /// Utility class for achievement calculator specific operations.
+    /// </summary>
     public static class AchievementCalculationHelper
     {
-
         public static IEnumerable<long> GetDurationOfFlightsWithSmoothRudder(SmartPlaneUser targetUser)
         {
-            var allConnections = GetEndAndStartTimesOfAllConnections(targetUser);
-            var rudderDatasInRange = GetAllRudderDatasWithinConnections(allConnections, targetUser).ToList();
+            var rudderDatasInRange = GetAllRudderDatasWithinConnections(targetUser).ToList();
             if (rudderDatasInRange.Any() == false || rudderDatasInRange.First().Any() == false)
             {
                 yield break;
             }
 
             //initialize start and end times with the same value to ensure correct calculation
-            long startTime = rudderDatasInRange.First().First().TimeStamp;
-            long endTime = startTime;
             var lastValue = rudderDatasInRange.First().First().Value;
-            long duration = 0;
             foreach (var connections in rudderDatasInRange)
             {
-                startTime = connections.First().TimeStamp;
-                endTime = startTime;
-                foreach (var rudderData in connections)
+                var rudderDatas = connections as IList<RudderData> ?? connections.ToList();
+                var startTime = rudderDatas.First().TimeStamp;
+                var endTime = startTime;
+                long duration;
+
+                foreach (var rudderData in rudderDatas)
                 {
                     if (rudderData.Value - lastValue > 30 || rudderData.Value - lastValue < -30)
                     {
-                        //save current length of smooth flying and reset start and endtimes to start new calculation
+                        //save current length of smooth flying and reset start and end times to start new calculation
                         duration = endTime - startTime;
                         startTime = rudderData.TimeStamp;
                         endTime = startTime;
                         if (duration > 0)
                         {
-                            yield return (long) duration;
+                            yield return duration;
                         }
                     }
                     else
@@ -49,40 +49,39 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 duration = endTime - startTime;
                 if (duration > 0)
                 {
-                    yield return (long) duration;
+                    yield return duration;
                 }
             }
         } 
 
         public static IEnumerable<long> GetDurationOfFlightsWithSmoothMotor(SmartPlaneUser targetUser)
         {
-            var allConnections = GetEndAndStartTimesOfAllConnections(targetUser);
-            var motorDatasInRange = GetAllMotorDatasWithinConnections(allConnections, targetUser).ToList();
+            var motorDatasInRange = GetAllMotorDatasWithinConnections(targetUser).ToList();
             if (motorDatasInRange.Any() == false || motorDatasInRange.First().Any() == false)
             {
                 yield break;
             }
 
             // initialize start and endTime to the same value to ensure correct calculation
-            long startTime = motorDatasInRange.First().First().TimeStamp;            
-            long endTime = startTime;
             var lastValue = motorDatasInRange.First().First().Value;
-            long duration = 0;
             foreach (var connection in motorDatasInRange)
             {
-                startTime = connection.First().TimeStamp;
-                endTime = startTime;
-                foreach (var motorData in connection)
+                var motorDatas = connection as IList<MotorData> ?? connection.ToList();
+                var startTime = motorDatas.First().TimeStamp;
+                var endTime = startTime;
+                long duration;
+
+                foreach (var motorData in motorDatas)
                 {
                     if (motorData.Value - lastValue > 30 || motorData.Value - lastValue < -30)
                     {
-                        //save current length of smooth flying and reset start and endtimes to start new calculation
+                        //save current length of smooth flying and reset start and end times to start new calculation
                         duration = endTime - startTime;
                         startTime = motorData.TimeStamp;
                         endTime = startTime;
                         if (duration > 0)
                         {
-                            yield return (long) duration;
+                            yield return duration;
                         }
                     }
                     else
@@ -94,7 +93,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 duration = endTime - startTime;
                 if (duration > 0)
                 {
-                    yield return (long) duration;
+                    yield return duration;
                 }
             }
         }
@@ -104,10 +103,9 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         /// </summary>
         /// <param name="targetUser"></param>
         /// <returns></returns>
-        public static IEnumerable<long> GetDurationsOffRestlessFlyingTimes(SmartPlaneUser targetUser)
+        public static IEnumerable<long> GetDurationsOfRestlessFlyingTimes(SmartPlaneUser targetUser)
         {
-            var allConnections = GetEndAndStartTimesOfAllConnections(targetUser);
-            var motorDatasInRange = GetAllMotorDatasWithinConnections(allConnections, targetUser);
+            var motorDatasInRange = GetAllMotorDatasWithinConnections(targetUser).ToList();
             if (motorDatasInRange.Any() == false || motorDatasInRange.First().Any() == false)
             {
                 yield break;
@@ -118,7 +116,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 long? startTime = 0;
                 long endtime = 0;
                 long? duration;
-                int lastValue = 999; //definetly different from first value encountered
+                int lastValue = 999; //definitely different from first value encountered
                 foreach (var motorData in motorDatas)
                 {
                     if (motorData.Value != lastValue)
@@ -145,15 +143,14 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         } 
 
         /// <summary>
-        /// Returns the length of the times a plane was flying with maxminum motor value
+        /// Returns the length of the times a plane was flying with maximum motor value
         /// </summary>
         /// <param name="targetUser"></param>
         /// <returns></returns>
         public static IEnumerable<long> GetDurationsWithMaxMotor(SmartPlaneUser targetUser)
         {
             const int motorMax = 253; // Tolerance: 100% can be 253 or 255
-            var allConnections = GetEndAndStartTimesOfAllConnections(targetUser);
-            var motorDatasInRange = GetAllMotorDatasWithinConnections(allConnections, targetUser);
+            var motorDatasInRange = GetAllMotorDatasWithinConnections(targetUser);
             foreach (var motorDatas in motorDatasInRange)
             {
                 long? startTime = null;
@@ -191,27 +188,27 @@ namespace WebServer.BusinessLogic.AchievementCalculators
         /// <summary>
         /// Returns all MotorData for each passed flight
         /// </summary>
-        /// <param name="flights"></param>
         /// <param name="targetUser"></param>
         /// <returns></returns>
-        public static IEnumerable<IEnumerable<MotorData>> GetAllMotorDatasWithinConnections(IEnumerable<Tuple<long, long>> flights, SmartPlaneUser targetUser)
+        public static IEnumerable<IEnumerable<MotorData>> GetAllMotorDatasWithinConnections(SmartPlaneUser targetUser)
         {
+            var flights = GetEndAndStartTimesOfAllConnections(targetUser);
             return flights.Select(flight => targetUser.MotorDatas.Where(x => x.TimeStamp >= flight.Item1 && x.TimeStamp <= flight.Item2));
         }
 
         /// <summary>
         /// Returns all RudderData for each passed flight
         /// </summary>
-        /// <param name="flights"></param>
         /// <param name="targetUser"></param>
         /// <returns></returns>
-        public static IEnumerable<IEnumerable<RudderData>> GetAllRudderDatasWithinConnections(IEnumerable<Tuple<long, long>> flights, SmartPlaneUser targetUser)
+        public static IEnumerable<IEnumerable<RudderData>> GetAllRudderDatasWithinConnections(SmartPlaneUser targetUser)
         {
+            var flights = GetEndAndStartTimesOfAllConnections(targetUser);
             return flights.Select(flight => targetUser.RudderDatas.Where(x => x.TimeStamp >= flight.Item1 && x.TimeStamp <= flight.Item2));
         }
 
         /// <summary>
-        /// Returns a lis of tuples which indicates a start time and a end time of one session
+        /// Returns a list of tuples which indicates a start time and a end time of one session
         /// </summary>
         /// <param name="targetUser"></param>
         /// <returns></returns>
@@ -230,8 +227,8 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                     yield return new Tuple<long, long>(startTime, endTime);
                     continue;
                 }
-                //If there is no en connection for the startconnection and the start connection is the last start connection, the use the last 
-                //Motor data time stamp as endtime because the plane is actually flying
+                //If there is no en connection for the start connection and the start connection is the last start connection, the use the last 
+                //Motor data time stamp as end time because the plane is actually flying
                 if (startTimes.Any(x => x > startTime))
                 {
                     continue;

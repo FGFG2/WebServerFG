@@ -18,7 +18,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
 
         protected override int CalculateProgress(SmartPlaneUser targetUser)
         {
-            var restlessFlightDurations = AchievementCalculationHelper.GetDurationsOffRestlessFlyingTimes(targetUser);
+            var restlessFlightDurations = AchievementCalculationHelper.GetDurationsOfRestlessFlyingTimes(targetUser);
             int progress = 0;
             long durationsSum = 0;
             foreach (var restlessFlightDuration in restlessFlightDurations)

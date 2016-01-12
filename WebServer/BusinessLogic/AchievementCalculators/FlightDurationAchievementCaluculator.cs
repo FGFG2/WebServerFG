@@ -8,7 +8,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
     public class FlightDurationAchievementCaluculator : AchievementCalculator
     {
         public const string AchievementName = "Flugmeilen";
-        public const int OnePercentStep = 6000; // One minute in mili secounds
+        public const int OnePercentStep = 6000; // One minute in milliseconds
 
         public FlightDurationAchievementCaluculator(ILoggerFacade logger) : base(AchievementName, logger)
         {
@@ -33,7 +33,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
             return new Achievement
             {
                 Name = AchievementName,
-                Description = "Fliege insgesamt 10 Minuten mit deinem SmartPlane",
+                Description = "Fliege insgesamt 10 Minuten mit deinem SmartPlane.",
                 Progress = 0,
                 ImageUrl = GetPathToImage()
             };

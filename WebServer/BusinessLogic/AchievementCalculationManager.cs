@@ -114,6 +114,8 @@ namespace WebServer.BusinessLogic
         {
             if (disposing)
             {
+                // The update task works on the _achievementDb which needs to be disposed. Therefore we wait for the task to finish 
+                // even though we are blocking the GC-thread, because 100ms delay can be ignored.
                 while (_updateTask.Status == TaskStatus.Running)
                 {
                     Thread.Sleep(100);
