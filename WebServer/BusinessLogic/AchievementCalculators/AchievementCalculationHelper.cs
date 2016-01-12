@@ -10,6 +10,8 @@ namespace WebServer.BusinessLogic.AchievementCalculators
     /// </summary>
     public static class AchievementCalculationHelper
     {
+        private const int SmoothDataTolerance = 30;
+
         public static IEnumerable<long> GetDurationOfFlightsWithSmoothRudder(SmartPlaneUser targetUser)
         {
             var rudderDatasInRange = GetAllRudderDatasWithinConnections(targetUser).ToList();
@@ -18,18 +20,18 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 yield break;
             }
 
-            //initialize start and end times with the same value to ensure correct calculation
             var lastValue = rudderDatasInRange.First().First().Value;
             foreach (var connections in rudderDatasInRange)
             {
                 var rudderDatas = connections as IList<RudderData> ?? connections.ToList();
+                //initialize start and end times with the same value to ensure correct calculation
                 var startTime = rudderDatas.First().TimeStamp;
                 var endTime = startTime;
                 long duration;
 
                 foreach (var rudderData in rudderDatas)
                 {
-                    if (rudderData.Value - lastValue > 30 || rudderData.Value - lastValue < -30)
+                    if (_isSmoothDifference (rudderData.Value,lastValue))
                     {
                         //save current length of smooth flying and reset start and end times to start new calculation
                         duration = endTime - startTime;
@@ -46,13 +48,19 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                     }
                     lastValue = rudderData.Value;
                 }
+
                 duration = endTime - startTime;
                 if (duration > 0)
                 {
                     yield return duration;
                 }
             }
-        } 
+        }
+
+        private static bool _isSmoothDifference(int value, int lastValue)
+        {
+            return value - lastValue > SmoothDataTolerance || value - lastValue < -SmoothDataTolerance;
+        }
 
         public static IEnumerable<long> GetDurationOfFlightsWithSmoothMotor(SmartPlaneUser targetUser)
         {
@@ -61,19 +69,19 @@ namespace WebServer.BusinessLogic.AchievementCalculators
             {
                 yield break;
             }
-
-            // initialize start and endTime to the same value to ensure correct calculation
+            
             var lastValue = motorDatasInRange.First().First().Value;
             foreach (var connection in motorDatasInRange)
             {
                 var motorDatas = connection as IList<MotorData> ?? connection.ToList();
+                //initialize start and end times with the same value to ensure correct calculation
                 var startTime = motorDatas.First().TimeStamp;
                 var endTime = startTime;
                 long duration;
 
                 foreach (var motorData in motorDatas)
                 {
-                    if (motorData.Value - lastValue > 30 || motorData.Value - lastValue < -30)
+                    if (_isSmoothDifference(motorData.Value, lastValue))
                     {
                         //save current length of smooth flying and reset start and end times to start new calculation
                         duration = endTime - startTime;
@@ -90,6 +98,7 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                     }
                     lastValue = motorData.Value;
                 }
+
                 duration = endTime - startTime;
                 if (duration > 0)
                 {
@@ -116,7 +125,8 @@ namespace WebServer.BusinessLogic.AchievementCalculators
                 long? startTime = 0;
                 long endtime = 0;
                 long? duration;
-                int lastValue = 999; //definitely different from first value encountered
+                var lastValue = 999; //definitely different from first value encountered
+
                 foreach (var motorData in motorDatas)
                 {
                     if (motorData.Value != lastValue)
