@@ -24,42 +24,34 @@ namespace WebServer.BusinessLogic.AchievementCalculators
             foreach (var connections in rudderDatasInRange)
             {
                 var rudderDatas = connections as IList<RudderData> ?? connections.ToList();
-                //initialize start and end times with the same value to ensure correct calculation
-                var startTime = rudderDatas.First().TimeStamp;
-                var endTime = startTime;
-                long duration;
+                var timeStampOfCurrentValue = rudderDatas.First().TimeStamp;
 
                 foreach (var rudderData in rudderDatas)
                 {
-                    if (_isSmoothDifference (rudderData.Value,lastValue))
+                    //save current length of smooth flying and reset start and end times to start new calculation
+                    var timeStampOfPreviousValue = timeStampOfCurrentValue;
+                    timeStampOfCurrentValue = rudderData.TimeStamp;
+
+                    if (_isSmoothDifference(rudderData.Value, lastValue))
                     {
-                        //save current length of smooth flying and reset start and end times to start new calculation
-                        duration = endTime - startTime;
-                        startTime = rudderData.TimeStamp;
-                        endTime = startTime;
-                        if (duration > 0)
+                        var durationBetweenMotorValues = timeStampOfCurrentValue - timeStampOfPreviousValue;
+
+                        if (durationBetweenMotorValues > 0)
                         {
-                            yield return duration;
+                            yield return durationBetweenMotorValues;
                         }
                     }
-                    else
-                    {
-                        endTime = rudderData.TimeStamp;
-                    }
+
                     lastValue = rudderData.Value;
                 }
-
-                duration = endTime - startTime;
-                if (duration > 0)
-                {
-                    yield return duration;
-                }
             }
+
         }
 
         private static bool _isSmoothDifference(int value, int lastValue)
         {
-            return value - lastValue > SmoothDataTolerance || value - lastValue < -SmoothDataTolerance;
+            var difference = Math.Abs(value - lastValue);
+            return difference < SmoothDataTolerance;
         }
 
         public static IEnumerable<long> GetDurationOfFlightsWithSmoothMotor(SmartPlaneUser targetUser)
@@ -74,35 +66,25 @@ namespace WebServer.BusinessLogic.AchievementCalculators
             foreach (var connection in motorDatasInRange)
             {
                 var motorDatas = connection as IList<MotorData> ?? connection.ToList();
-                //initialize start and end times with the same value to ensure correct calculation
-                var startTime = motorDatas.First().TimeStamp;
-                var endTime = startTime;
-                long duration;
+                var timeStampOfCurrentValue = motorDatas.First().TimeStamp;
 
                 foreach (var motorData in motorDatas)
                 {
+                    //save current length of smooth flying and reset start and end times to start new calculation
+                    var timeStampOfPreviousValue = timeStampOfCurrentValue;
+                    timeStampOfCurrentValue = motorData.TimeStamp;
+
                     if (_isSmoothDifference(motorData.Value, lastValue))
                     {
-                        //save current length of smooth flying and reset start and end times to start new calculation
-                        duration = endTime - startTime;
-                        startTime = motorData.TimeStamp;
-                        endTime = startTime;
-                        if (duration > 0)
+                        var durationBetweenMotorValues = timeStampOfCurrentValue - timeStampOfPreviousValue;
+
+                        if (durationBetweenMotorValues > 0)
                         {
-                            yield return duration;
+                            yield return durationBetweenMotorValues;
                         }
                     }
-                    else
-                    {
-                        endTime = motorData.TimeStamp;
-                    }
-                    lastValue = motorData.Value;
-                }
 
-                duration = endTime - startTime;
-                if (duration > 0)
-                {
-                    yield return duration;
+                    lastValue = motorData.Value;
                 }
             }
         }

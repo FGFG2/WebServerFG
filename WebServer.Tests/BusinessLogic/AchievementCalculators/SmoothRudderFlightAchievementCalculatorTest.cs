@@ -21,7 +21,27 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             base.SetUp();
             SystemUnderTest = new SmoothRudderFlightAchievementCalculator(Substitute.For<ILoggerFacade>());
         }
-        
+
+        [Test]
+        public void Test_if_not_reached_when_not_smooth()
+        {
+            //Arrange
+            const long timeBetween = 6000;
+            SmartPlaneUser user = CreateSmartPlaneUser();
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
+            for (int i = 0; i < 100 + 1; i++)
+            {
+                user.RudderDatas.Add(new RudderData { TimeStamp = i * timeBetween, Value = 31 * i });
+            }
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 110 * timeBetween, Value = false });
+
+            //Act
+            SystemUnderTest.CalculateAchievementProgress(user);
+
+            //Assert
+            Assert.That(user.Achievements.First().Progress, Is.EqualTo(0));
+        }
+
         [TestCase(100)]
         [TestCase(90)]
         [TestCase(80)]

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using NSubstitute;
 using NUnit.Framework;
 using WebServer.BusinessLogic.AchievementCalculators;
@@ -21,7 +17,27 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
             base.SetUp();
             SystemUnderTest = new SmoothMotorFlightAchievementCalculator(Substitute.For<ILoggerFacade>());
         }
-        
+
+        [Test]
+        public void Test_if_not_reached_when_not_smooth()
+        {
+            //Arrange
+            const long timeBetween = 6000;
+            SmartPlaneUser user = CreateSmartPlaneUser();
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
+            for (int i = 0; i < 100 + 1; i++)
+            {
+                user.MotorDatas.Add(new MotorData { TimeStamp = i * timeBetween, Value = 31*i });
+            }
+            user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 110 * timeBetween, Value = false });
+
+            //Act
+            SystemUnderTest.CalculateAchievementProgress(user);
+
+            //Assert
+            Assert.That(user.Achievements.First().Progress, Is.EqualTo(0));
+        }
+
         [TestCase(100)]
         [TestCase(90)]
         [TestCase(80)]
@@ -116,18 +132,23 @@ namespace WebServer.Tests.BusinessLogic.AchievementCalculators
         {
             //Arrange
             SmartPlaneUser user = CreateSmartPlaneUser();
+            // First connection
             user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 0, Value = true });
             for (int i = 0; i <= 6; i++)
             {
                 user.MotorDatas.Add(new MotorData { TimeStamp = i * 10000, Value = 125 });                
             }
             user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 60000, Value = false });
+
+
+            // Second connection
             user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 60000, Value = true });
             for (int i = 6; i <= 12; i++)
             {             
                 user.MotorDatas.Add(new MotorData { TimeStamp = (i+1) * 10000, Value = 200 });
             }
             user.ConnectedDatas.Add(new ConnectedData { TimeStamp = 150000, Value = false });
+            
             //Act
             SystemUnderTest.CalculateAchievementProgress(user);
             //Assert
